@@ -10,12 +10,10 @@ namespace osu_tools
 {
 	namespace db_parser
 	{
-		osu_db parse_osu_db(fs::path &pFilePath)
+		void parse_osu_db(fs::path &pFilePath)
 		{
-			// create db
-			osu_db lDb;
-			// confirm file path exists
-			if (fs::exists(pFilePath))
+			// confirm file path exists and db is not cached
+			if (!aDbCached && fs::exists(pFilePath))
 			{
 				// open file as binary
 				ifstream lFile(pFilePath.string(), ios::binary);
@@ -23,19 +21,19 @@ namespace osu_tools
 				if (lFile.good())
 				{
 					// parse general information
-					lDb.sOsuVersion = get_int(lFile);
-					lDb.sFolderCount = get_int(lFile);
-					lDb.sAccountUnlocked = get_bool(lFile);
-					lDb.sUnlockTime = get_long_long(lFile);
-					lDb.sPlayerName = get_string(lFile);
-					lDb.sBeatmapCount = get_int(lFile);
-					lDb.sFileDetails = vector<tuple<uint32_t, string, string>>();
+					aCachedDb.sOsuVersion = get_int(lFile);
+					aCachedDb.sFolderCount = get_int(lFile);
+					aCachedDb.sAccountUnlocked = get_bool(lFile);
+					aCachedDb.sUnlockTime = get_long_long(lFile);
+					aCachedDb.sPlayerName = get_string(lFile);
+					aCachedDb.sBeatmapCount = get_int(lFile);
+					aCachedDb.sFileDetails = vector<tuple<uint32_t, string, string>>();
 					//lDb.sBeatmaps = vector<beatmap>();
 					// iterate over beatmap entries
-					for (uint32_t i = 0; i < lDb.sBeatmapCount; ++i)
+					for (uint32_t i = 0; i < aCachedDb.sBeatmapCount; ++i)
 					{
 						if(i % 1000 == 0)
-							std::cout << "Done " << i << " / " << lDb.sBeatmapCount << endl;
+							std::cout << "Done " << i << " / " << aCachedDb.sBeatmapCount << endl;
 						// parse beatmap information
 						beatmap lBeatmap;
 						lBeatmap.sEntrySz = get_int(lFile);
@@ -123,14 +121,13 @@ namespace osu_tools
 						lBeatmap.sManiaScrollSpeed = get_char(lFile);
 
 						//lDb.sBeatmaps.push_back(lBeatmap);
-						lDb.sFileDetails.push_back(std::tuple<uint32_t, string, string>(lBeatmap.sBeatmapID, lBeatmap.sFolderName, lBeatmap.sOsuFilename));
+						aCachedDb.sFileDetails.push_back(std::tuple<uint32_t, string, string>(lBeatmap.sBeatmapID, lBeatmap.sFolderName, lBeatmap.sOsuFilename));
 					}
 
 					lFile.close();
+					aDbCached = true;
 				}
 			}
-
-			return lDb;
 		}
 
 		float get_float(std::ifstream &pFs)

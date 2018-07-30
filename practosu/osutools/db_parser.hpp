@@ -19,7 +19,10 @@ namespace osu_tools
 {
 	namespace db_parser
 	{
-		osu_db parse_osu_db(std::experimental::filesystem::path &pFilePath);
+		inline osu_db aCachedDb;
+		inline bool aDbCached = false;
+
+		void parse_osu_db(std::experimental::filesystem::path &pFilePath);
 
 		float get_float(std::ifstream &pFs);
 		double get_double(std::ifstream &pFs);

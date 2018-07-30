@@ -72,14 +72,23 @@ struct beatmap
 
 struct timing_point
 {
-	uint32_t sOffset;
-	float sMSPerBeat;
+	int32_t sOffset;
+	double sMSPerBeat;
 	uint32_t sMeter;
 	uint8_t sSampleSet;
 	uint8_t sSampleIndex;
 	uint8_t sVolume;
 	bool sInherited;
 	bool sKiai;
+};
+
+struct hit_object_extras
+{
+	uint32_t sSampleSet = -1;
+	uint32_t sAdditionSet = -1;
+	uint32_t sCustomIndex = -1;
+	uint32_t sSampleVolume = -1;
+	std::string sFilename;
 };
 
 struct hit_object
@@ -90,7 +99,7 @@ struct hit_object
 	uint8_t sType;
 	uint8_t sHitSounds;
 	// other data goes here
-	// todo later extra 0:0:0:0:
+	hit_object_extras sExtras;
 };
 
 struct hit_object_circle : hit_object
@@ -101,7 +110,7 @@ struct hit_object_circle : hit_object
 struct hit_object_slider : hit_object
 {
 	char sSliderType;
-	std::vector<std::pair<uint32_t, uint32_t>> sCurvePoints; // L uses 1, P uses 2, B uses many
+	std::vector<std::pair<int32_t, int32_t>> sCurvePoints; // L uses 1, P uses 2, B uses many
 	uint8_t sRepeat;
 	float sPixelLength;
 	std::vector<uint8_t> sEdgeHitsounds;
@@ -118,24 +127,25 @@ struct osu_file
 	std::string sFolderName;
 	std::string sFileName;
 
-	uint8_t sBeatmapVersion;
+	uint8_t sBeatmapVersion = -1;
 	// general
 	std::string sAudioFilename;
-	uint32_t sAudioLeadIn;
-	uint32_t sPreviewTime;
-	bool sCountdown;
+	uint32_t sAudioLeadIn = -1;
+	int32_t sPreviewTime = -1;
+	int8_t sCountdown = -1;
 	std::string sSampleSet;
-	float sStackLeniency;
-	uint8_t sMode;
-	bool sLetterboxInBreaks;
-	bool sEpilepsyWarning;
-	bool sWidescreenStoryboard;
+	float sStackLeniency = -1.0;
+	int8_t sMode = -1;
+	int8_t sLetterboxInBreaks = -1;
+	int8_t sEpilepsyWarning = -1;
+	int8_t sWidescreenStoryboard = -1;
+	std::string sSkinPreference;
 	// editor
 	std::vector<int> sBookmarks;
-	float sDistanceSpacing;
-	uint8_t sBeatDivisor;
-	uint8_t sGridSize;
-	float sTimelineZoom;
+	float sDistanceSpacing = -1.0;
+	uint8_t sBeatDivisor = -1;
+	uint8_t sGridSize = -1;
+	float sTimelineZoom = -1.0;
 	// metadata
 	std::string sTitle;
 	std::string sTitleUnicode;
@@ -145,15 +155,15 @@ struct osu_file
 	std::string sVersion;
 	std::string sSource;
 	std::string sTags;
-	uint32_t sBeatmapID;
-	uint32_t sBeatmapSetID;
+	uint32_t sBeatmapID = -1;
+	uint32_t sBeatmapSetID = -1;
 	// difficulty
-	float sHPDrainRate;
-	float sCircleSize;
-	float sOverallDifficulty;
-	float sApproachRate;
-	float sSliderMultiplier;
-	float sSliderTickRate;
+	float sHPDrainRate = -1.0;
+	float sCircleSize = -1.0;
+	float sOverallDifficulty = -1.0;
+	float sApproachRate = -1.0;
+	float sSliderMultiplier = -1.0;
+	float sSliderTickRate = -1.0;
 	// events
 	std::string sBackground;
 	std::string sVideo;

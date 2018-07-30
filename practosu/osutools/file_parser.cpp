@@ -75,7 +75,7 @@ namespace osu_tools
 		{
 			string lLine;
 			size_t lPos;
-			string lDilimiter = ": ";
+			string lDilimiter = ":";
 			string lToken;
 			while (getline(lFs, lLine))
 			{
@@ -90,14 +90,8 @@ namespace osu_tools
 					lOsuFile.sSampleSet = lLine;
 				else if (lToken == "StackLeniency")
 					lOsuFile.sStackLeniency = stof(lLine);
-				else if (lToken == "Countdown")
-					lOsuFile.sCountdown = (lLine == "1");
-				else if (lToken == "LetterboxInBreaks")
-					lOsuFile.sLetterboxInBreaks = (lLine == "1");
-				else if (lToken == "WidescreenStoryboard")
-					lOsuFile.sWidescreenStoryboard = (lLine == "1");
-				else if (lToken == "EpilepsyWarning")
-					lOsuFile.sEpilepsyWarning = (lLine == "1");
+				else if (lToken == "SkinPreference")
+					lOsuFile.sSkinPreference = lLine;
 				else
 				{
 					int sInt = stoi(lLine);
@@ -107,6 +101,14 @@ namespace osu_tools
 						lOsuFile.sPreviewTime = sInt;
 					else if (lToken == "Mode")
 						lOsuFile.sMode = static_cast<uint8_t>(sInt);
+					else if (lToken == "Countdown")
+						lOsuFile.sCountdown = static_cast<uint8_t>(sInt);
+					else if (lToken == "LetterboxInBreaks")
+						lOsuFile.sLetterboxInBreaks = static_cast<uint8_t>(sInt);
+					else if (lToken == "WidescreenStoryboard")
+						lOsuFile.sWidescreenStoryboard = static_cast<uint8_t>(sInt);
+					else if (lToken == "EpilepsyWarning")
+						lOsuFile.sEpilepsyWarning = static_cast<uint8_t>(sInt);
 				}
 			}
 		}
@@ -115,7 +117,7 @@ namespace osu_tools
 		{
 			string lLine;
 			size_t lPos;
-			string lDilimiter = ": ";
+			string lDilimiter = ":";
 			string lToken;
 			while (getline(lFs, lLine))
 			{
@@ -282,7 +284,7 @@ namespace osu_tools
 		{
 			string lLine;
 			size_t lPos;
-			string lDilimiter = ": ";
+			string lDilimiter = ":";
 			string lToken;
 			while (getline(lFs, lLine))
 			{
@@ -334,6 +336,20 @@ namespace osu_tools
 					lObject->sType = lType;
 					lObject->sHitSounds = lHitSounds;
 
+					if(lSs.peek() == ',')
+					{
+						lSs.ignore();
+						lSs >> lObject->sExtras.sSampleSet;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sAdditionSet;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sCustomIndex;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sSampleVolume;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sFilename;
+					}
+
 					lOsuFile.sHitObjects.push_back(lObject);
 				}
 				else if (lType & (1 << 1))
@@ -361,24 +377,42 @@ namespace osu_tools
 					lObject->sRepeat = static_cast<uint8_t>(lTemp);
 					lSs.ignore();
 					lSs >> lObject->sPixelLength;
-					do
+					if(lSs.peek() == ',')
 					{
-						lSs.ignore();
-						lSs >> lTemp;
-						lObject->sEdgeHitsounds.push_back(static_cast<uint8_t>(lTemp));
-					} while (lSs.peek() == '|');
-					lSs.ignore();
-					do
+						do
+						{
+							lSs.ignore();
+							lSs >> lTemp;
+							lObject->sEdgeHitsounds.push_back(static_cast<uint8_t>(lTemp));
+						} while (lSs.peek() == '|');
+					}
+					if(lSs.peek() == ',')
 					{
-						uint8_t lTemp_u8;
-						lSs.ignore();
-						lSs >> lTemp;
-						lTemp_u8 = static_cast<uint8_t>(lTemp);
-						lSs.ignore();
-						lSs >> lTemp;
-						lObject->sEdgeAdditions.push_back(pair<uint8_t, uint8_t>(lTemp_u8, static_cast<uint8_t>(lTemp)));
-					} while (lSs.peek() == '|');
+						do
+						{
+							lSs.ignore();
+							uint8_t lTemp_u8;
+							lSs >> lTemp;
+							lTemp_u8 = static_cast<uint8_t>(lTemp);
+							lSs.ignore();
+							lSs >> lTemp;
+							lObject->sEdgeAdditions.push_back(pair<uint8_t, uint8_t>(lTemp_u8, static_cast<uint8_t>(lTemp)));
+						} while (lSs.peek() == '|');
+					}
 
+					if (lSs.peek() == ',')
+					{
+						lSs.ignore();
+						lSs >> lObject->sExtras.sSampleSet;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sAdditionSet;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sCustomIndex;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sSampleVolume;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sFilename;
+					}
 
 					lOsuFile.sHitObjects.push_back(lObject);
 				}
@@ -394,8 +428,23 @@ namespace osu_tools
 					lSs.ignore();
 					lSs >> lObject->sEndTime;
 
+					if (lSs.peek() == ',')
+					{
+						lSs.ignore();
+						lSs >> lObject->sExtras.sSampleSet;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sAdditionSet;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sCustomIndex;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sSampleVolume;
+						lSs.ignore();
+						lSs >> lObject->sExtras.sFilename;
+					}
+
 					lOsuFile.sHitObjects.push_back(lObject);
 				}
+
 			}
 		}
 
