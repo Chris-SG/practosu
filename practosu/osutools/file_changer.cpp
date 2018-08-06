@@ -12,16 +12,12 @@ namespace osu_tools
 	namespace file_changer
 	{
 
-		void set_speed_multiplier(float aMulti, osu_file& aOsuFile)
+		void set_speed_multiplier(float aMulti, osu_file& aOsuFile, string aNewFilename)
 		{
 			std::string lFullPath = osu_tools::func::get_beatmap_directory().string() + aOsuFile.sFolderName;
-			auto lAudioFilename = aOsuFile.sAudioFilename;
-			while (lAudioFilename.at(0) == ' ')
-				lAudioFilename.erase(0, 1);
-			std::string lAudioName = "[practosu speed " + std::to_string(aMulti) + "] - " + lAudioFilename;
-			if(!fs::exists(lFullPath + "\\" + lAudioName))
+			if(!fs::exists(lFullPath + "\\" + aOsuFile.sAudioFilename))
 			{
-				std::string lCommandLine = "-nostats -loglevel 0 -i \"" + lFullPath + "\\" + lAudioFilename + "\" -filter:a \"";
+				std::string lCommandLine = "-nostats -loglevel 0 -i \"" + lFullPath + "\\" + aOsuFile.sAudioFilename + "\" -filter:a \"";
 				auto lMulti = aMulti;
 				if (lMulti > 2.0)
 				{
@@ -45,74 +41,81 @@ namespace osu_tools
 				{
 					lCommandLine += "atempo=" + std::to_string(lMulti);
 				}
-				lCommandLine += "\" -vn \"" + lFullPath + "\\" + lAudioName + "\"";
+				lCommandLine += "\" -vn \"" + lFullPath + "\\" + aNewFilename + "\"";
 				STARTUPINFOA lSi;
 				PROCESS_INFORMATION lPi;
 				ZeroMemory(&lSi, sizeof(lSi));
 				lSi.cb = sizeof(lSi);
 				ZeroMemory(&lPi, sizeof(lPi));
 				std::string lffPath = fs::current_path().string() + "\\ffmpeg.exe";
-				if (CreateProcessA(lffPath.c_str(), const_cast<char *>(lCommandLine.c_str()), NULL, NULL, false, 0, NULL, NULL, &lSi, &lPi))
-					std::cout << "worked" << std::endl;
-				else
-					printf("CreateProcess failed (%d).\n", GetLastError());
+				if (!CreateProcessA(lffPath.c_str(), const_cast<char *>(lCommandLine.c_str()), NULL, NULL, false, 0, NULL, NULL, &lSi, &lPi))
+					throw "Failed to create process: " + GetLastError();
 			}
 
-			aOsuFile.sBeatmapID = 0;
-			aOsuFile.sCreator = "Bauxe";
-			aOsuFile.sVersion = "Test";
-			aOsuFile.sFileName = aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aOsuFile.sVersion + "].osu";
-			aOsuFile.sAudioFilename = lAudioName;
-			aOsuFile.sPreviewTime /= aMulti;
-
-			for (auto& lTimingPoint : aOsuFile.sTimingPoints)
+			try
 			{
-				lTimingPoint.sOffset /= aMulti;
-				if (lTimingPoint.sInherited)
-					lTimingPoint.sMSPerBeat /= aMulti;
-			}
+				/*aOsuFile.sBeatmapID = 0;
+				aOsuFile.sCreator = "Bauxe";
+				aOsuFile.sVersion = "Test";
+				aOsuFile.sFileName = aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aOsuFile.sVersion + "].osu";*/
+				aOsuFile.sAudioFilename = aNewFilename;
+				aOsuFile.sPreviewTime /= aMulti;
 
-			for (auto& lBreakPeriod : aOsuFile.sBreakPeriods)
-			{
-				lBreakPeriod.first /= aMulti;
-				lBreakPeriod.second /= aMulti;
-			}
-
-			for (auto& lHitObject : aOsuFile.sHitObjects)
-			{
-				if (lHitObject->sType & (1 << 0))
+				for (auto& lTimingPoint : aOsuFile.sTimingPoints)
 				{
-					hit_object_circle* lObject = static_cast<hit_object_circle*>(lHitObject);
-					lObject->sTime /= aMulti;
+					lTimingPoint.sOffset /= aMulti;
+					if (lTimingPoint.sInherited)
+						lTimingPoint.sMSPerBeat /= aMulti;
 				}
-				else if (lHitObject->sType & (1 << 1))
-				{
-					hit_object_slider* lObject = static_cast<hit_object_slider*>(lHitObject);
-					lObject->sTime /= aMulti;
 
-					/*int lBeatDuration = 0, lBeatPercentage = -100;
-					for(const auto& lTimingPoint : aOsuFile.sTimingPoints)
+				for (auto& lBreakPeriod : aOsuFile.sBreakPeriods)
+				{
+					lBreakPeriod.first /= aMulti;
+					lBreakPeriod.second /= aMulti;
+				}
+
+				for (auto& lHitObject : aOsuFile.sHitObjects)
+				{
+					if (lHitObject->sType & (1 << 0))
 					{
+						hit_object_circle* lObject = static_cast<hit_object_circle*>(lHitObject);
+						lObject->sTime /= aMulti;
+					}
+					else if (lHitObject->sType & (1 << 1))
+					{
+						hit_object_slider* lObject = static_cast<hit_object_slider*>(lHitObject);
+						lObject->sTime /= aMulti;
+
+						/*int lBeatDuration = 0, lBeatPercentage = -100;
+						for(const auto& lTimingPoint : aOsuFile.sTimingPoints)
+						{
 						if (lTimingPoint.sOffset < lObject->sTime)
 						{
-							if (lTimingPoint.sMSPerBeat > 0)
-								lBeatDuration = lTimingPoint.sMSPerBeat;
-							else
-								lBeatPercentage = lTimingPoint.sMSPerBeat;
+						if (lTimingPoint.sMSPerBeat > 0)
+						lBeatDuration = lTimingPoint.sMSPerBeat;
+						else
+						lBeatPercentage = lTimingPoint.sMSPerBeat;
 						}
 						else
-							break;
+						break;
+						}
+						lObject->sPixelLength = (lObject->sPixelLength / (100.0 * aOsuFile.sSliderMultiplier)) * (lBeatDuration * (abs(lBeatPercentage) / 100));*/
 					}
-					lObject->sPixelLength = (lObject->sPixelLength / (100.0 * aOsuFile.sSliderMultiplier)) * (lBeatDuration * (abs(lBeatPercentage) / 100));*/
-				}
-				else if (lHitObject->sType & (1 << 3))
-				{
-					hit_object_spinner* lObject = static_cast<hit_object_spinner*>(lHitObject);
-					lObject->sTime /= aMulti;
-					lObject->sEndTime /= aMulti;
+					else if (lHitObject->sType & (1 << 3))
+					{
+						hit_object_spinner* lObject = static_cast<hit_object_spinner*>(lHitObject);
+						lObject->sTime /= aMulti;
+						lObject->sEndTime /= aMulti;
+					}
 				}
 			}
+			catch (std::exception& e)
+			{
+				throw "Error parsing .osu file: " + *e.what();
+			}
+			
 		}
+
 		void set_speed_percentage(float aMulti, osu_file& aOsuFile);
 	}
 }

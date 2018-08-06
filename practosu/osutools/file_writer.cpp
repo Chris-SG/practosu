@@ -2,6 +2,7 @@
 #include "file_writer.hpp"
 #include "func.hpp"
 #include "file_structs.hpp"
+#include "file_changer.hpp"
 
 using namespace std;
 namespace fs = std::experimental::filesystem;
@@ -10,7 +11,7 @@ namespace osu_tools
 {
 	namespace file_writer
 	{
-		bool write_file(const osu_file& aOsuFile)
+		bool write_file(osu_file& aOsuFile, const float& aMultiplier, const std::string& aNewFilename)
 		{
 			auto lSongPath = osu_tools::func::get_beatmap_directory();
 			lSongPath += aOsuFile.sFolderName;
@@ -18,36 +19,41 @@ namespace osu_tools
 
 			// if file already exists, we don't want to recreate it
 			if (fs::exists(lSongPath))
-				return false;
+				throw "Beatmap file name already exists! Please change file name";
+			if (aMultiplier != 1.0)
+				osu_tools::file_changer::set_speed_multiplier(aMultiplier, aOsuFile, aNewFilename);
+
+			aOsuFile.sBeatmapID = 0;
+
 			ofstream lFileStream;
 			lFileStream.open(lSongPath.string(), ofstream::out | ofstream::app);
 			//	fs::create(lSongPath);
-			lFileStream << "osu file format v" << static_cast<int>(aOsuFile.sBeatmapVersion) << endl << endl;
+			lFileStream << "osu file format v" << static_cast<int>(aOsuFile.sBeatmapVersion) << std::endl << std::endl;
 
-			lFileStream << "[General]" << endl;
+			lFileStream << "[General]" << std::endl;
 			if (!aOsuFile.sAudioFilename.empty())
-				lFileStream << "AudioFilename:" << aOsuFile.sAudioFilename << endl;
+				lFileStream << "AudioFilename:" << aOsuFile.sAudioFilename << std::endl;
 			if(aOsuFile.sAudioLeadIn != -1)
-				lFileStream << "AudioLeadIn:" << aOsuFile.sAudioLeadIn << endl;
+				lFileStream << "AudioLeadIn:" << aOsuFile.sAudioLeadIn << std::endl;
 			if (aOsuFile.sPreviewTime != -1)
-				lFileStream << "PreviewTime:" << aOsuFile.sPreviewTime << endl;
+				lFileStream << "PreviewTime:" << aOsuFile.sPreviewTime << std::endl;
 			if(aOsuFile.sCountdown != -1)
-				lFileStream << "Countdown:" << static_cast<int>(aOsuFile.sCountdown) << endl;
+				lFileStream << "Countdown:" << static_cast<int>(aOsuFile.sCountdown) << std::endl;
 			if (!aOsuFile.sSampleSet.empty())
-				lFileStream << "SampleSet:" << aOsuFile.sSampleSet << endl;
+				lFileStream << "SampleSet:" << aOsuFile.sSampleSet << std::endl;
 			if (aOsuFile.sStackLeniency != -1.0)
-				lFileStream << "StackLeniency:" << aOsuFile.sStackLeniency << endl; // float x.x
+				lFileStream << "StackLeniency:" << aOsuFile.sStackLeniency << std::endl; // float x.x
 			if (aOsuFile.sMode != -1)
-				lFileStream << "Mode:" << static_cast<int>(aOsuFile.sMode) << endl; // uint8_t
+				lFileStream << "Mode:" << static_cast<int>(aOsuFile.sMode) << std::endl; // uint8_t
 			if(aOsuFile.sLetterboxInBreaks != -1)
-				lFileStream << "LetterboxInBreaks:" << static_cast<int>(aOsuFile.sLetterboxInBreaks) << endl;
+				lFileStream << "LetterboxInBreaks:" << static_cast<int>(aOsuFile.sLetterboxInBreaks) << std::endl;
 			if (!aOsuFile.sSkinPreference.empty())
-				lFileStream << "SkinPreference:" << aOsuFile.sSkinPreference << endl;
+				lFileStream << "SkinPreference:" << aOsuFile.sSkinPreference << std::endl;
 			if(static_cast<int>(aOsuFile.sEpilepsyWarning) != -1)
-				lFileStream << "EpilepsyWarning:" << static_cast<int>(aOsuFile.sEpilepsyWarning) << endl;
+				lFileStream << "EpilepsyWarning:" << static_cast<int>(aOsuFile.sEpilepsyWarning) << std::endl;
 			if(aOsuFile.sWidescreenStoryboard != -1)
-				lFileStream << "WidescreenStoryboard:" << static_cast<int>(aOsuFile.sWidescreenStoryboard) << endl;
-			lFileStream << endl;
+				lFileStream << "WidescreenStoryboard:" << static_cast<int>(aOsuFile.sWidescreenStoryboard) << std::endl;
+			lFileStream << std::endl;
 
 			lFileStream << "[Editor]" << endl;
 			if(aOsuFile.sBookmarks.size() > 0)

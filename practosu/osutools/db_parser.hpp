@@ -10,7 +10,7 @@ struct osu_db
 	bool sAccountUnlocked;
 	uint64_t sUnlockTime;
 	std::string sPlayerName;
-	uint32_t sBeatmapCount;
+	uint32_t sBeatmapCount = -1;
 	std::vector < std::tuple<uint32_t, std::string, std::string>> sFileDetails;
 	//std::vector<beatmap> sBeatmaps;
 };
@@ -21,8 +21,9 @@ namespace osu_tools
 	{
 		inline osu_db aCachedDb;
 		inline bool aDbCached = false;
+		static const osu_db aEmptyStruct;
 
-		void parse_osu_db(std::experimental::filesystem::path &pFilePath);
+		bool parse_osu_db(std::experimental::filesystem::path &pFilePath);
 
 		float get_float(std::ifstream &pFs);
 		double get_double(std::ifstream &pFs);
