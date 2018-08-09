@@ -116,7 +116,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing general section: " + *e.what();
+				throw std::invalid_argument("Error parsing general section: " + *e.what());
 			}
 		}
 
@@ -163,7 +163,7 @@ namespace osu_tools
 			}
 			catch(std::exception& e)
 			{
-				throw "Error parsing editor section: " + *e.what();
+				throw std::invalid_argument("Error parsing editor section: " + *e.what());
 			}
 		}
 
@@ -206,7 +206,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing metadata section: " + *e.what();
+				throw std::invalid_argument("Error parsing metadata section: " + *e.what());
 			}
 		}
 
@@ -241,7 +241,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing difficulty section: " + *e.what();
+				throw std::invalid_argument("Error parsing difficulty section: " + *e.what());
 			}
 		}
 		void read_file_events(std::ifstream &lFs, osu_file &lOsuFile)
@@ -277,7 +277,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing events section: " + *e.what();
+				throw std::invalid_argument("Error parsing events section: " + *e.what());
 			}
 		}
 		void read_file_timingpoints(std::ifstream &lFs, osu_file &lOsuFile)
@@ -307,17 +307,22 @@ namespace osu_tools
 					lSs.ignore();
 					lSs >> lTemp;
 					lTP.sVolume = static_cast<uint8_t>(lTemp);
-					lSs.ignore();
-					lSs >> lTP.sInherited;
-					lSs.ignore();
-					lSs >> lTP.sKiai;
+					if (lSs.peek() == ',');
+					{
+						lSs.ignore();
+						lSs >> lTemp;
+						lTP.sInherited = static_cast<uint8_t>(lTemp);
+						lSs.ignore();
+						lSs >> lTemp;
+						lTP.sKiai = static_cast<uint8_t>(lTemp);
+					}
 
 					lOsuFile.sTimingPoints.push_back(lTP);
 				}
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing timingpoints section: " + *e.what();
+				throw std::invalid_argument("Error parsing timingpoints section: " + *e.what());
 			}
 		}
 
@@ -349,7 +354,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing colours section: " + *e.what();
+				throw std::invalid_argument("Error parsing colours section: " + *e.what());
 			}
 		}
 
@@ -500,7 +505,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing hitobjects section: " + *e.what();
+				throw std::invalid_argument("Error parsing hitobjects section: " + *e.what());
 			}
 		}
 

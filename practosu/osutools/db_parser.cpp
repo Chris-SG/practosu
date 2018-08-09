@@ -16,7 +16,7 @@ namespace osu_tools
 			if (!aDbCached)
 			{
 				if (!fs::exists(pFilePath))
-					throw "osu.db file does not exist in path " + pFilePath.string();
+					throw std::invalid_argument("osu.db file does not exist in path " + pFilePath.string());
 				// open file as binary
 				ifstream lFile(pFilePath.string(), ios::binary);
 				// check file is good

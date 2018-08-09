@@ -25,6 +25,7 @@ practosu::practosu(QWidget *parent)
 	connect(mPolling, SIGNAL(keyPolled()), this, SLOT(loadMap()));
 
 	connect(ui.loadMap, &QPushButton::clicked, this, &practosu::selectFile);
+	connect(ui.reloadMap, &QPushButton::clicked, this, &practosu::loadSelectedMap);
 
 	connect(ui.hpSlider, &QAbstractSlider::valueChanged, this, &practosu::updateHP);
 	connect(ui.csSlider, &QAbstractSlider::valueChanged, this, &practosu::updateCS);
@@ -34,9 +35,20 @@ practosu::practosu(QWidget *parent)
 	connect(ui.speedText, &QLineEdit::textChanged, this, &practosu::updateAudio);
 }
 
-void practosu::loadMap()
+void practosu::loadSelectedMap()
 {
-	loadMap(osu_tools::func::get_current_beatmap());
+	try
+	{
+		loadMap(osu_tools::func::get_current_beatmap());
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox lMsg;
+		lMsg.setText("Error loading map");
+		lMsg.setInformativeText(e.what());
+		lMsg.setStandardButtons(QMessageBox::Ok);
+		lMsg.exec();
+	}
 }
 
 void practosu::loadMap(fs::path aPath)
@@ -49,16 +61,39 @@ void practosu::loadMap(fs::path aPath)
 	ui.fileText->setText(QString::fromStdString(mCurrentMap.sFileName));
 	ui.creatorText->setText(QString::fromStdString("practosu"));
 	ui.versionText->setText(QString::fromStdString(mCurrentMap.sVersion));
-
-	ui.hpSlider->setValue(mCurrentMap.sHPDrainRate * 10);
-	ui.csSlider->setValue(mCurrentMap.sCircleSize * 10);
-	ui.odSlider->setValue(mCurrentMap.sOverallDifficulty * 10);
-	if (mCurrentMap.sApproachRate == -1.0)
-		ui.arSlider->setDisabled(true);
+	if(mCurrentMap.sBeatmapVersion >= 13)
+	{
+		ui.hpSlider->setMaximum(100);
+		ui.csSlider->setMaximum(100);
+		ui.odSlider->setMaximum(100);
+		ui.arSlider->setMaximum(100);
+		ui.hpSlider->setValue(mCurrentMap.sHPDrainRate * 10);
+		ui.csSlider->setValue(mCurrentMap.sCircleSize * 10);
+		ui.odSlider->setValue(mCurrentMap.sOverallDifficulty * 10);
+		if (mCurrentMap.sApproachRate == -1.0)
+			ui.arSlider->setDisabled(true);
+		else
+		{
+			ui.arSlider->setDisabled(false);
+			ui.arSlider->setValue(mCurrentMap.sApproachRate * 10);
+		}
+	}
 	else
 	{
-		ui.arSlider->setDisabled(false);
-		ui.arSlider->setValue(mCurrentMap.sApproachRate * 10);
+		ui.hpSlider->setMaximum(10);
+		ui.csSlider->setMaximum(10);
+		ui.odSlider->setMaximum(10);
+		ui.arSlider->setMaximum(10);
+		ui.hpSlider->setValue(mCurrentMap.sHPDrainRate);
+		ui.csSlider->setValue(mCurrentMap.sCircleSize);
+		ui.odSlider->setValue(mCurrentMap.sOverallDifficulty);
+		if (mCurrentMap.sApproachRate == -1.0)
+			ui.arSlider->setDisabled(true);
+		else
+		{
+			ui.arSlider->setDisabled(false);
+			ui.arSlider->setValue(mCurrentMap.sApproachRate);
+		}
 	}
 
 	ui.speedText->setText("1.0");
@@ -66,14 +101,25 @@ void practosu::loadMap(fs::path aPath)
 
 void practosu::writeFile()
 {
-	mCurrentMap.sFileName = ui.fileText->text().toStdString();
-	mCurrentMap.sCreator = ui.creatorText->text().toStdString();
-	mCurrentMap.sVersion = ui.versionText->text().toStdString();
+	try
+	{
+		mCurrentMap.sFileName = ui.fileText->text().toStdString();
+		mCurrentMap.sCreator = ui.creatorText->text().toStdString();
+		mCurrentMap.sVersion = ui.versionText->text().toStdString();
 
-	if (std::stof(ui.speedText->text().toStdString()) == 1.0)
-		osu_tools::file_writer::write_file(mCurrentMap);
-	else
-		osu_tools::file_writer::write_file(mCurrentMap, std::stof(ui.speedText->text().toStdString()), ui.audioText->text().toStdString());
+		if (std::stof(ui.speedText->text().toStdString()) == 1.0)
+			osu_tools::file_writer::write_file(mCurrentMap);
+		else
+			osu_tools::file_writer::write_file(mCurrentMap, std::stof(ui.speedText->text().toStdString()), ui.audioText->text().toStdString());
+	}
+	catch (std::exception& e)
+	{
+		QMessageBox lMsg;
+		lMsg.setText("Error saving map");
+		lMsg.setInformativeText(e.what());
+		lMsg.setStandardButtons(QMessageBox::Ok);
+		lMsg.exec();
+	}
 }
 
 void practosu::updateAudio()
@@ -102,7 +148,7 @@ void practosu::updateHP()
 	auto lPosition = ui.hpSlider->value();
 
 	std::stringstream lStream;
-	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / 10.0;
+	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.hpSlider->maximum() / 10.0);
 	ui.hpLabel->setText(QString::fromStdString(lStream.str()));
 	mCurrentMap.sHPDrainRate = stof(lStream.str());
 }
@@ -112,7 +158,7 @@ void practosu::updateCS()
 	auto lPosition = ui.csSlider->value();
 
 	std::stringstream lStream;
-	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / 10.0;
+	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.csSlider->maximum() / 10.0);
 	ui.csLabel->setText(QString::fromStdString(lStream.str()));
 	mCurrentMap.sCircleSize = stof(lStream.str());
 }
@@ -122,7 +168,7 @@ void practosu::updateOD()
 	auto lPosition = ui.odSlider->value();
 
 	std::stringstream lStream;
-	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / 10.0;
+	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.odSlider->maximum() / 10.0);
 	ui.odLabel->setText(QString::fromStdString(lStream.str()));
 	mCurrentMap.sOverallDifficulty = stof(lStream.str());
 }
@@ -132,17 +178,9 @@ void practosu::updateAR()
 	auto lPosition = ui.arSlider->value();
 
 	std::stringstream lStream;
-	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / 10.0;
+	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.arSlider->maximum() / 10.0);
 	ui.arLabel->setText(QString::fromStdString(lStream.str()));
 	mCurrentMap.sApproachRate = stof(lStream.str());
 }
 
-void poll()
-{
-	bool lPressed = false;
-	while(1)
-	{
-		if(!lPressed && GetKeyState(VK_F11) & 0x8000)
-			
-	}
-}
+void poll();

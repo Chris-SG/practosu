@@ -18,6 +18,8 @@ private:
 	Ui::dbprogress ui;
 	std::thread * mDbThread;
 	std::thread * mProgressThread;
+	std::thread * mLabelThread;
 
 	void perform();
+	void updateLabel(QProgressBar* aProgressBar, QLabel* aLabel);
 };

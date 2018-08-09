@@ -15,8 +15,15 @@ namespace osu_tools
 		void set_speed_multiplier(float aMulti, osu_file& aOsuFile, string aNewFilename)
 		{
 			std::string lFullPath = osu_tools::func::get_beatmap_directory().string() + aOsuFile.sFolderName;
-			if(!fs::exists(lFullPath + "\\" + aOsuFile.sAudioFilename))
+			if(!fs::exists(lFullPath + "\\" + aNewFilename))
 			{
+				if(!fs::exists(lFullPath + "\\" + aOsuFile.sAudioFilename))
+				{
+					if (aOsuFile.sAudioFilename.find_first_not_of(" ") == 1)
+						aOsuFile.sAudioFilename = aOsuFile.sAudioFilename.substr(1, aOsuFile.sAudioFilename.find_last_not_of(" "));
+					else
+						throw std::invalid_argument("Audio file cannot be found!");
+				}
 				std::string lCommandLine = "-nostats -loglevel 0 -i \"" + lFullPath + "\\" + aOsuFile.sAudioFilename + "\" -filter:a \"";
 				auto lMulti = aMulti;
 				if (lMulti > 2.0)
@@ -49,7 +56,7 @@ namespace osu_tools
 				ZeroMemory(&lPi, sizeof(lPi));
 				std::string lffPath = fs::current_path().string() + "\\ffmpeg.exe";
 				if (!CreateProcessA(lffPath.c_str(), const_cast<char *>(lCommandLine.c_str()), NULL, NULL, false, 0, NULL, NULL, &lSi, &lPi))
-					throw "Failed to create process: " + GetLastError();
+					throw std::invalid_argument("Failed to create process: " + GetLastError());
 			}
 
 			try
@@ -111,7 +118,7 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw "Error parsing .osu file: " + *e.what();
+				throw invalid_argument("Error parsing .osu file: " + *e.what());
 			}
 			
 		}

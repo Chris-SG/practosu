@@ -19,7 +19,7 @@ namespace osu_tools
 
 			// if file already exists, we don't want to recreate it
 			if (fs::exists(lSongPath))
-				throw "Beatmap file name already exists! Please change file name";
+				throw std::invalid_argument("Beatmap file name already exists! Please change file name");
 			if (aMultiplier != 1.0)
 				osu_tools::file_changer::set_speed_multiplier(aMultiplier, aOsuFile, aNewFilename);
 

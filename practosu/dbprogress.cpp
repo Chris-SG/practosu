@@ -45,6 +45,6 @@ void dbprogress::perform()
 	lPath += "osu!.db";
 	mDbThread = new std::thread(osu_tools::db_parser::parse_osu_db, lPath);
 	mDbThread->join();
-	Sleep(1000);
+	Sleep(250);
 	mComplete = true;
 }

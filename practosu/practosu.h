@@ -11,7 +11,7 @@ class practosu : public QMainWindow
 
 public:
 	practosu(QWidget *parent = Q_NULLPTR);
-	void loadMap();
+	void loadSelectedMap();
 	void loadMap(std::experimental::filesystem::path aPath);
 
 

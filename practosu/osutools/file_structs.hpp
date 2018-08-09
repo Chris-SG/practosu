@@ -78,8 +78,8 @@ struct timing_point
 	uint8_t sSampleSet;
 	uint8_t sSampleIndex;
 	uint8_t sVolume;
-	bool sInherited;
-	bool sKiai;
+	bool sInherited = false;
+	bool sKiai = false;
 };
 
 struct hit_object_extras
