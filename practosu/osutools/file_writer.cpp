@@ -11,17 +11,32 @@ namespace osu_tools
 {
 	namespace file_writer
 	{
-		bool write_file(osu_file& aOsuFile, const float& aMultiplier, const std::string& aNewFilename)
+		static inline void ReplaceAll(std::string &str, const std::string& from, const std::string& to)
 		{
+			size_t start_pos = 0;
+			while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+				str.replace(start_pos, from.length(), to);
+				start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+			}
+		}
+
+		bool write_file(osu_file& aOsuFile, std::string& aNewFilename, std::string& aNewAudioFilename, const float& aMultiplier)
+		{
+			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sFileName);
+			ReplaceAll(aNewFilename, "%SPEED%", std::to_string(aMultiplier));
+			ReplaceAll(aNewFilename, "%AR%", std::to_string(aOsuFile.sApproachRate));
+			ReplaceAll(aNewFilename, "%CS%", std::to_string(aOsuFile.sCircleSize));
+			ReplaceAll(aNewFilename, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
+			ReplaceAll(aNewFilename, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
 			auto lSongPath = osu_tools::func::get_beatmap_directory();
 			lSongPath += aOsuFile.sFolderName;
-			lSongPath /= aOsuFile.sFileName;
+			lSongPath /= aNewFilename;
 
 			// if file already exists, we don't want to recreate it
 			if (fs::exists(lSongPath))
 				throw std::invalid_argument("Beatmap file name already exists! Please change file name");
 			if (aMultiplier != 1.0)
-				osu_tools::file_changer::set_speed_multiplier(aMultiplier, aOsuFile, aNewFilename);
+				osu_tools::file_changer::set_speed_multiplier(aMultiplier, aOsuFile, aNewAudioFilename);
 
 			aOsuFile.sBeatmapID = 0;
 

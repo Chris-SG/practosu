@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "practosu.h"
 #include <QtWidgets/QApplication>
-#include <QKeyEvent>
 #include "func.hpp"
 
 void pollKeyboard(practosu& aWindow)
@@ -9,10 +8,12 @@ void pollKeyboard(practosu& aWindow)
 	bool lPressed = false;
 	while(1)
 	{
-		if(GetAsyncKeyState(VK_F11) == 1 && !lPressed)
+		if(GetAsyncKeyState(VK_F11) && !lPressed)
 		{
+			HWND lWnd = reinterpret_cast<HWND>(aWindow.winId());
 			lPressed = true;
-			aWindow.loadMap();
+			aWindow.pressLoadMap();
+			SetForegroundWindow(lWnd);
 			Sleep(1000);
 		}
 		else

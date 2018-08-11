@@ -131,6 +131,8 @@
     <ClCompile Include="osutools\file_writer.cpp" />
     <ClCompile Include="osutools\func.cpp" />
     <ClCompile Include="practosu.cpp" />
+    <ClCompile Include="presets.cpp" />
+    <ClCompile Include="presetsmanager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -150,11 +152,19 @@
     <ClInclude Include="osutools\file_writer.hpp" />
     <ClInclude Include="osutools\func.hpp" />
     <QtMoc Include="practosu.h" />
+    <ClInclude Include="presets.hpp" />
+    <QtMoc Include="presetsmanager.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(ProjectDir)\.;$(ProjectDir)osutools</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(ProjectDir)\.;$(ProjectDir)\osutools</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
+    </QtMoc>
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="dbprogress.ui" />
     <QtUic Include="practosu.ui" />
+    <QtUic Include="presetsmanager.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="practosu.qrc" />

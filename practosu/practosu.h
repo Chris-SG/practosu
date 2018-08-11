@@ -13,6 +13,7 @@ public:
 	practosu(QWidget *parent = Q_NULLPTR);
 	void loadSelectedMap();
 	void loadMap(std::experimental::filesystem::path aPath);
+	void pressLoadMap();
 
 
 private:
@@ -30,5 +31,8 @@ private slots:
 	void updateCS();
 	void updateOD();
 	void updateAR();
+
+	void loadPresetList();
+	void loadPreset();
 };
 

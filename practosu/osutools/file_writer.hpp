@@ -7,7 +7,7 @@ namespace osu_tools
 {
 	namespace file_writer
 	{
-		bool write_file(osu_file& aOsuFile, const float& aMultiplier = 1.0, const std::string& aNewFilename = "");
+		bool write_file(osu_file& aOsuFile, std::string& aNewFilename, std::string& aNewAudioFilename, const float& aMultiplier = 1.0);
 	}
 	
 }

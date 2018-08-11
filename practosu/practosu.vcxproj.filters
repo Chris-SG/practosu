@@ -63,6 +63,12 @@
     <ClCompile Include="dbprogress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="presets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="presetsmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -86,6 +92,9 @@
     <ClInclude Include="osutools\file_changer.hpp">
       <Filter>Header Files\osutools</Filter>
     </ClInclude>
+    <ClInclude Include="presets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="practosu.h">
@@ -94,12 +103,18 @@
     <QtMoc Include="dbprogress.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="presetsmanager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="practosu.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="dbprogress.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="presetsmanager.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

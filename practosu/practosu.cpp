@@ -3,6 +3,7 @@
 #include "func.hpp"
 #include "db_parser.hpp"
 #include "dbprogress.h"
+#include "presets.hpp"
 
 #include <sstream>
 #include "file_writer.hpp"
@@ -17,6 +18,7 @@ practosu::practosu(QWidget *parent)
 		Sleep(1000);
 	delete lWdg;
 	ui.setupUi(this);
+	setFixedSize(700, 460);
 
 	//auto lDv = new QDoubleValidator(0.1, 10.0, 3);
 	//ui.speedText->setValidator(lDv);
@@ -33,6 +35,8 @@ practosu::practosu(QWidget *parent)
 	connect(ui.arSlider, &QAbstractSlider::valueChanged, this, &practosu::updateAR);
 	connect(ui.writeFile, &QPushButton::clicked, this, &practosu::writeFile);
 	connect(ui.speedText, &QLineEdit::textChanged, this, &practosu::updateAudio);
+
+	connect(ui.presetsList, SIGNAL(activated(int)), this, SLOT(loadPreset()));
 }
 
 void practosu::loadSelectedMap()
@@ -51,6 +55,56 @@ void practosu::loadSelectedMap()
 	}
 }
 
+void practosu::pressLoadMap()
+{
+	ui.reloadMap->click();
+}
+
+void practosu::loadPresetList()
+{
+	auto lPresets = presets::presetNames();
+	ui.presetsList->clear();
+	for (auto lPreset : lPresets)
+		ui.presetsList->addItem(QString::fromStdString(lPreset));
+}
+
+void practosu::loadPreset()
+{
+	preset lPreset = presets::getPresetByName(ui.presetsList->currentText().toStdString());
+	if (lPreset.sPresetName.empty())
+		return;
+	if (!lPreset.sFilename.empty())
+		ui.fileText->setText(QString::fromStdString(lPreset.sFilename));
+	if (!lPreset.sVersion.empty())
+		ui.versionText->setText(QString::fromStdString(lPreset.sVersion));
+	if (!lPreset.sCreator.empty())
+		ui.creatorText->setText(QString::fromStdString(lPreset.sCreator));
+	if(mCurrentMap.sBeatmapVersion>=13)
+	{
+		if (lPreset.sAR != -1)
+			ui.arSlider->setValue(std::round(lPreset.sAR / 10));
+		if (lPreset.sCS != -1)
+			ui.csSlider->setValue(std::round(lPreset.sAR / 10));
+		if (lPreset.sOD != -1)
+			ui.odSlider->setValue(std::round(lPreset.sAR / 10));
+		if (lPreset.sHP != -1)
+			ui.hpSlider->setValue(std::round(lPreset.sAR / 10));
+	}
+	else
+	{
+		if (lPreset.sAR != -1)
+			ui.arSlider->setValue(lPreset.sAR);
+		if (lPreset.sCS != -1)
+			ui.csSlider->setValue(lPreset.sAR);
+		if (lPreset.sOD != -1)
+			ui.odSlider->setValue(lPreset.sAR);
+		if (lPreset.sHP != -1)
+			ui.hpSlider->setValue(lPreset.sAR);
+	}
+	if (lPreset.sSpeed != -1.0)
+		ui.speedText->setText(QString::number(lPreset.sSpeed));
+}
+
 void practosu::loadMap(fs::path aPath)
 {
 	mCurrentMap = osu_tools::file_parser::parse_osu_file(aPath);
@@ -58,7 +112,7 @@ void practosu::loadMap(fs::path aPath)
 	ui.audioText->setText(QString::fromStdString(mCurrentMap.sAudioFilename));
 	ui.audioText->setReadOnly(true);
 	
-	ui.fileText->setText(QString::fromStdString(mCurrentMap.sFileName));
+	ui.fileText->setText(QString::fromStdString("%NAME%"));
 	ui.creatorText->setText(QString::fromStdString("practosu"));
 	ui.versionText->setText(QString::fromStdString(mCurrentMap.sVersion));
 	if(mCurrentMap.sBeatmapVersion >= 13)
@@ -103,14 +157,14 @@ void practosu::writeFile()
 {
 	try
 	{
-		mCurrentMap.sFileName = ui.fileText->text().toStdString();
+		//mCurrentMap.sFileName = ui.fileText->text().toStdString();
 		mCurrentMap.sCreator = ui.creatorText->text().toStdString();
 		mCurrentMap.sVersion = ui.versionText->text().toStdString();
 
 		if (std::stof(ui.speedText->text().toStdString()) == 1.0)
-			osu_tools::file_writer::write_file(mCurrentMap);
+			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString());
 		else
-			osu_tools::file_writer::write_file(mCurrentMap, std::stof(ui.speedText->text().toStdString()), ui.audioText->text().toStdString());
+			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), std::stof(ui.speedText->text().toStdString()));
 	}
 	catch (std::exception& e)
 	{
