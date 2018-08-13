@@ -19,7 +19,6 @@ public:
 private:
 	osu_file mCurrentMap;
 	osu_file mModifiedMap;
-	QThread * mPolling;
 
 	Ui::practosuClass ui;
 private slots:
@@ -34,5 +33,6 @@ private slots:
 
 	void loadPresetList();
 	void loadPreset();
+	void editPresets();
 };
 

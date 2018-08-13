@@ -92,8 +92,6 @@ namespace presets
 		return lRet;
 	}
 
-
-
 	std::vector<std::string> presetNames()
 	{
 		if (!mInitialized)
@@ -103,5 +101,15 @@ namespace presets
 			lNames.push_back(lPreset.sPresetName);
 
 		return lNames;
+	}
+
+	preset getPresetByName(std::string aName)
+	{
+		for(preset lPreset : mPresets)
+		{
+			if (lPreset.sPresetName == aName)
+				return lPreset;
+		}
+		return preset{};
 	}
 }

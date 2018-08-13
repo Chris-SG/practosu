@@ -13,43 +13,250 @@
   <property name="windowTitle">
    <string>presetsmanager</string>
   </property>
-  <widget class="QComboBox" name="presetList">
+  <widget class="QPushButton" name="savePreset">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>20</y>
-     <width>181</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="currentText">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>310</x>
-     <y>22</y>
-     <width>71</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Select Preset</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="newPreset">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
+     <x>390</x>
+     <y>260</y>
      <width>75</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
-    <string>New Preset</string>
+    <string>Save Preset</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="fileNameCheck">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>70</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="creatorCheck">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>110</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="versionCheck">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="speedCheck">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>190</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="hpCheck">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>70</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="csCheck">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>110</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="odCheck">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>150</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="arCheck">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>190</y>
+     <width>70</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>20</y>
+     <width>181</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Preset Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="fileName">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>70</y>
+     <width>181</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>File Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="creatorName">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>110</y>
+     <width>181</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Creator Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="versionName">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>150</y>
+     <width>181</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Version Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="multiplier">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>190</y>
+     <width>113</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Multiplier</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="hpText">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>70</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maxLength">
+    <number>3</number>
+   </property>
+   <property name="placeholderText">
+    <string>Hp Drain</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="csText">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>110</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maxLength">
+    <number>3</number>
+   </property>
+   <property name="placeholderText">
+    <string>Circle Size</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="odText">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>150</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maxLength">
+    <number>3</number>
+   </property>
+   <property name="placeholderText">
+    <string>Overall Diff</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="arText">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>190</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maxLength">
+    <number>3</number>
+   </property>
+   <property name="placeholderText">
+    <string>Approach Rate</string>
    </property>
   </widget>
  </widget>

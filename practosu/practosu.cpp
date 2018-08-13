@@ -4,6 +4,7 @@
 #include "db_parser.hpp"
 #include "dbprogress.h"
 #include "presets.hpp"
+#include "presetsmanager.h"
 
 #include <sstream>
 #include "file_writer.hpp"
@@ -23,18 +24,16 @@ practosu::practosu(QWidget *parent)
 	//auto lDv = new QDoubleValidator(0.1, 10.0, 3);
 	//ui.speedText->setValidator(lDv);
 
-	mPolling = new QThread(this);
-	connect(mPolling, SIGNAL(keyPolled()), this, SLOT(loadMap()));
-
 	connect(ui.loadMap, &QPushButton::clicked, this, &practosu::selectFile);
 	connect(ui.reloadMap, &QPushButton::clicked, this, &practosu::loadSelectedMap);
-
 	connect(ui.hpSlider, &QAbstractSlider::valueChanged, this, &practosu::updateHP);
 	connect(ui.csSlider, &QAbstractSlider::valueChanged, this, &practosu::updateCS);
 	connect(ui.odSlider, &QAbstractSlider::valueChanged, this, &practosu::updateOD);
 	connect(ui.arSlider, &QAbstractSlider::valueChanged, this, &practosu::updateAR);
+
 	connect(ui.writeFile, &QPushButton::clicked, this, &practosu::writeFile);
 	connect(ui.speedText, &QLineEdit::textChanged, this, &practosu::updateAudio);
+	connect(ui.editPresets, &QPushButton::clicked, this, &practosu::editPresets);
 
 	connect(ui.presetsList, SIGNAL(activated(int)), this, SLOT(loadPreset()));
 }
@@ -105,6 +104,12 @@ void practosu::loadPreset()
 		ui.speedText->setText(QString::number(lPreset.sSpeed));
 }
 
+void practosu::editPresets()
+{
+	presetsmanager * lMgr = new presetsmanager;
+	lMgr->show();
+}
+
 void practosu::loadMap(fs::path aPath)
 {
 	mCurrentMap = osu_tools::file_parser::parse_osu_file(aPath);
@@ -159,12 +164,11 @@ void practosu::writeFile()
 	{
 		//mCurrentMap.sFileName = ui.fileText->text().toStdString();
 		mCurrentMap.sCreator = ui.creatorText->text().toStdString();
-		mCurrentMap.sVersion = ui.versionText->text().toStdString();
 
 		if (std::stof(ui.speedText->text().toStdString()) == 1.0)
-			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString());
+			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), ui.versionText->text().toStdString());
 		else
-			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), std::stof(ui.speedText->text().toStdString()));
+			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), ui.versionText->text().toStdString(), std::stof(ui.speedText->text().toStdString()));
 	}
 	catch (std::exception& e)
 	{

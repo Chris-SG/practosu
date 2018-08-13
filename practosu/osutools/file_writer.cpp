@@ -20,17 +20,27 @@ namespace osu_tools
 			}
 		}
 
-		bool write_file(osu_file& aOsuFile, std::string& aNewFilename, std::string& aNewAudioFilename, const float& aMultiplier)
+		bool write_file(osu_file& aOsuFile, std::string& aNewFilename, std::string& aNewAudioFilename, std::string& aNewVersion, const float& aMultiplier)
 		{
 			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sFileName);
+			ReplaceAll(aNewFilename, "%VER%", aOsuFile.sVersion);
 			ReplaceAll(aNewFilename, "%SPEED%", std::to_string(aMultiplier));
 			ReplaceAll(aNewFilename, "%AR%", std::to_string(aOsuFile.sApproachRate));
 			ReplaceAll(aNewFilename, "%CS%", std::to_string(aOsuFile.sCircleSize));
 			ReplaceAll(aNewFilename, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
 			ReplaceAll(aNewFilename, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
+
+			ReplaceAll(aNewVersion, "%VER%", aOsuFile.sVersion);
+			ReplaceAll(aNewVersion, "%SPEED%", std::to_string(aMultiplier));
+			ReplaceAll(aNewVersion, "%AR%", std::to_string(aOsuFile.sApproachRate));
+			ReplaceAll(aNewVersion, "%CS%", std::to_string(aOsuFile.sCircleSize));
+			ReplaceAll(aNewVersion, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
+			ReplaceAll(aNewVersion, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
+
 			auto lSongPath = osu_tools::func::get_beatmap_directory();
 			lSongPath += aOsuFile.sFolderName;
 			lSongPath /= aNewFilename;
+			aOsuFile.sVersion = aNewVersion;
 
 			// if file already exists, we don't want to recreate it
 			if (fs::exists(lSongPath))
@@ -70,8 +80,8 @@ namespace osu_tools
 				lFileStream << "WidescreenStoryboard:" << static_cast<int>(aOsuFile.sWidescreenStoryboard) << std::endl;
 			lFileStream << std::endl;
 
-			lFileStream << "[Editor]" << endl;
-			if(aOsuFile.sBookmarks.size() > 0)
+			lFileStream << "[Editor]" << std::endl;
+			if(!aOsuFile.sBookmarks.empty())
 			{
 				lFileStream << "Bookmarks:";
 				for (uint32_t i = 0; i < aOsuFile.sBookmarks.size(); ++i)
@@ -82,83 +92,83 @@ namespace osu_tools
 				}
 			}
 			if(aOsuFile.sDistanceSpacing != -1.0)
-				lFileStream << "DistanceSpacing:" << aOsuFile.sDistanceSpacing << endl;
+				lFileStream << "DistanceSpacing:" << aOsuFile.sDistanceSpacing << std::endl;
 			if(aOsuFile.sBeatDivisor != -1)
-				lFileStream << "BeatDivisor:" << static_cast<int>(aOsuFile.sBeatDivisor) << endl;
+				lFileStream << "BeatDivisor:" << static_cast<int>(aOsuFile.sBeatDivisor) << std::endl;
 			if(aOsuFile.sGridSize != -1)
-				lFileStream << "GridSize:" << static_cast<int>(aOsuFile.sGridSize) << endl;
+				lFileStream << "GridSize:" << static_cast<int>(aOsuFile.sGridSize) << std::endl;
 			if(aOsuFile.sTimelineZoom != -1.0)
-				lFileStream << "TimelineZoom:" << aOsuFile.sTimelineZoom << endl; // float x.x
-			lFileStream << endl;
+				lFileStream << "TimelineZoom:" << aOsuFile.sTimelineZoom << std::endl; // float x.x
+			lFileStream << std::endl;
 			
 
-			lFileStream << "[Metadata]" << endl;
+			lFileStream << "[Metadata]" << std::endl;
 			if(!aOsuFile.sTitle.empty())
-				lFileStream << "Title:" << aOsuFile.sTitle << endl;
+				lFileStream << "Title:" << aOsuFile.sTitle << std::endl;
 			if (!aOsuFile.sTitleUnicode.empty())
-				lFileStream << "TitleUnicode:" << aOsuFile.sTitleUnicode << endl;
+				lFileStream << "TitleUnicode:" << aOsuFile.sTitleUnicode << std::endl;
 			if (!aOsuFile.sArtist.empty())
-				lFileStream << "Artist:" << aOsuFile.sArtist << endl;
+				lFileStream << "Artist:" << aOsuFile.sArtist << std::endl;
 			if (!aOsuFile.sArtistUnicode.empty())
-				lFileStream << "ArtistUnicode:" << aOsuFile.sArtistUnicode << endl;
+				lFileStream << "ArtistUnicode:" << aOsuFile.sArtistUnicode << std::endl;
 			if (!aOsuFile.sCreator.empty())
-				lFileStream << "Creator:" << aOsuFile.sCreator << endl;
+				lFileStream << "Creator:" << aOsuFile.sCreator << std::endl;
 			if (!aOsuFile.sVersion.empty())
-				lFileStream << "Version:" << aOsuFile.sVersion << endl;
+				lFileStream << "Version:" << aOsuFile.sVersion << std::endl;
 			if (!aOsuFile.sSource.empty())
-				lFileStream << "Source:" << aOsuFile.sSource << endl;
+				lFileStream << "Source:" << aOsuFile.sSource << std::endl;
 			if (!aOsuFile.sTags.empty())
-				lFileStream << "Tags:" << aOsuFile.sTags << endl;
+				lFileStream << "Tags:" << aOsuFile.sTags << std::endl;
 			if(aOsuFile.sBeatmapID != -1)
-				lFileStream << "BeatmapId:" << aOsuFile.sBeatmapID << endl;
+				lFileStream << "BeatmapId:" << aOsuFile.sBeatmapID << std::endl;
 			if(aOsuFile.sBeatmapSetID != -1)
-				lFileStream << "BeatmapSetID:" << aOsuFile.sBeatmapSetID << endl << endl;
-			lFileStream << endl;
+				lFileStream << "BeatmapSetID:" << aOsuFile.sBeatmapSetID << std::endl << std::endl;
+			lFileStream << std::endl;
 
-			lFileStream << "[Difficulty]" << endl; // all float x.x
+			lFileStream << "[Difficulty]" << std::endl; // all float x.x
 			if (aOsuFile.sHPDrainRate != -1.0)
-				lFileStream << "HPDrainRate:" << aOsuFile.sHPDrainRate << endl;
+				lFileStream << "HPDrainRate:" << aOsuFile.sHPDrainRate << std::endl;
 			if (aOsuFile.sCircleSize != -1.0)
-				lFileStream << "CircleSize:" << aOsuFile.sCircleSize << endl;
+				lFileStream << "CircleSize:" << aOsuFile.sCircleSize << std::endl;
 			if (aOsuFile.sOverallDifficulty != -1.0)
-				lFileStream << "OverallDifficulty:" << aOsuFile.sOverallDifficulty << endl;
+				lFileStream << "OverallDifficulty:" << aOsuFile.sOverallDifficulty << std::endl;
 			if (aOsuFile.sApproachRate != -1.0)
-				lFileStream << "ApproachRate:" << aOsuFile.sApproachRate << endl;
+				lFileStream << "ApproachRate:" << aOsuFile.sApproachRate << std::endl;
 			if (aOsuFile.sSliderMultiplier != -1.0)
-				lFileStream << "SliderMultiplier:" << aOsuFile.sSliderMultiplier << endl; // float x.xx
+				lFileStream << "SliderMultiplier:" << aOsuFile.sSliderMultiplier << std::endl; // float x.xx
 			if (aOsuFile.sSliderTickRate != -1.0)
-				lFileStream << "SliderTickRate:" << aOsuFile.sSliderTickRate << endl << endl;
+				lFileStream << "SliderTickRate:" << aOsuFile.sSliderTickRate << std::endl << std::endl;
 
-			lFileStream << "[Events]" << endl;
-			lFileStream << "//Background and Video events" << endl;
+			lFileStream << "[Events]" << std::endl;
+			lFileStream << "//Background and Video events" << std::endl;
 			if (!aOsuFile.sBackground.empty())
 			{
 				lFileStream << "0,0,\"" << aOsuFile.sBackground << "\"";
 				if (aOsuFile.sBeatmapVersion >= 10)
 					lFileStream << ",0,0";
-				lFileStream << endl;
+				lFileStream << std::endl;
 			}
-			lFileStream << "//Break Periods" << endl;
+			lFileStream << "//Break Periods" << std::endl;
 			for (const auto& lBreak : aOsuFile.sBreakPeriods)
-				lFileStream << "2," << lBreak.first << "," << lBreak.second << endl;
-			lFileStream << "//Storyboard Layer 0 (Background)" << endl;
-			lFileStream << "//Storyboard Layer 1 (Fail)" << endl;
-			lFileStream << "//Storyboard Layer 2 (Pass)" << endl;
-			lFileStream << "//Storyboard Layer 3 (Foreground)" << endl;
-			lFileStream << "//Storyboard Sound Samples" << endl;
-			lFileStream << endl;
+				lFileStream << "2," << lBreak.first << "," << lBreak.second << std::endl;
+			lFileStream << "//Storyboard Layer 0 (Background)" << std::endl;
+			lFileStream << "//Storyboard Layer 1 (Fail)" << std::endl;
+			lFileStream << "//Storyboard Layer 2 (Pass)" << std::endl;
+			lFileStream << "//Storyboard Layer 3 (Foreground)" << std::endl;
+			lFileStream << "//Storyboard Sound Samples" << std::endl;
+			lFileStream << std::endl;
 
-			lFileStream << "[TimingPoints]" << endl;
+			lFileStream << "[TimingPoints]" << std::endl;
 			for (const auto& lTimingPoint : aOsuFile.sTimingPoints)
-				lFileStream << lTimingPoint.sOffset << "," << lTimingPoint.sMSPerBeat << "," << lTimingPoint.sMeter << "," << static_cast<int>(lTimingPoint.sSampleSet) << "," << static_cast<int>(lTimingPoint.sSampleIndex) << "," << static_cast<int>(lTimingPoint.sVolume) << "," << lTimingPoint.sInherited << "," << lTimingPoint.sKiai << endl;
-			lFileStream << endl;
+				lFileStream << lTimingPoint.sOffset << "," << lTimingPoint.sMSPerBeat << "," << lTimingPoint.sMeter << "," << static_cast<int>(lTimingPoint.sSampleSet) << "," << static_cast<int>(lTimingPoint.sSampleIndex) << "," << static_cast<int>(lTimingPoint.sVolume) << "," << lTimingPoint.sInherited << "," << lTimingPoint.sKiai << std::endl;
+			lFileStream << std::endl;
 
-			lFileStream << "[Colours]" << endl;
+			lFileStream << "[Colours]" << std::endl;
 			for (uint32_t i = 0; i < aOsuFile.sColours.size(); ++i)
-				lFileStream << "Combo" << i + 1 << " : " << get<0>(aOsuFile.sColours[i]) << "," << get<1>(aOsuFile.sColours[i]) << "," << get<2>(aOsuFile.sColours[i]) << endl;
-			lFileStream << endl;
+				lFileStream << "Combo" << i + 1 << " : " << get<0>(aOsuFile.sColours[i]) << "," << get<1>(aOsuFile.sColours[i]) << "," << get<2>(aOsuFile.sColours[i]) << std::endl;
+			lFileStream << std::endl;
 
-			lFileStream << "[HitObjects]" << endl;
+			lFileStream << "[HitObjects]" << std::endl;
 			for (const auto& lHitObject : aOsuFile.sHitObjects)
 			{
 				if (lHitObject->sType & (1 << 0))
@@ -178,7 +188,7 @@ namespace osu_tools
 						lFileStream << "|" << lCurvePoint.first << ":" << lCurvePoint.second;
 					lFileStream << "," << static_cast<int>(lObject->sRepeat) << "," << lObject->sPixelLength;
 					
-					if(lObject->sEdgeHitsounds.size() > 0)
+					if(!lObject->sEdgeHitsounds.empty())
 					{
 						lFileStream << ",";
 						for (uint32_t i = 0; i < lObject->sEdgeHitsounds.size(); ++i)
@@ -188,7 +198,7 @@ namespace osu_tools
 								lFileStream << "|";
 						}
 					}
-					if(lObject->sEdgeAdditions.size() > 0)
+					if(!lObject->sEdgeAdditions.empty())
 					{
 						lFileStream << ",";
 						for (uint32_t i = 0; i < lObject->sEdgeAdditions.size(); ++i)
@@ -213,7 +223,7 @@ namespace osu_tools
 					}
 
 				}
-				lFileStream << endl;
+				lFileStream << std::endl;
 			}
 
 			lFileStream.close();
