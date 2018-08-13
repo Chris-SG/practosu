@@ -22,20 +22,28 @@ namespace osu_tools
 
 		bool write_file(osu_file& aOsuFile, std::string& aNewFilename, std::string& aNewAudioFilename, std::string& aNewVersion, const float& aMultiplier)
 		{
-			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sFileName);
-			ReplaceAll(aNewFilename, "%VER%", aOsuFile.sVersion);
-			ReplaceAll(aNewFilename, "%SPEED%", std::to_string(aMultiplier));
-			ReplaceAll(aNewFilename, "%AR%", std::to_string(aOsuFile.sApproachRate));
-			ReplaceAll(aNewFilename, "%CS%", std::to_string(aOsuFile.sCircleSize));
-			ReplaceAll(aNewFilename, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
-			ReplaceAll(aNewFilename, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
-
 			ReplaceAll(aNewVersion, "%VER%", aOsuFile.sVersion);
 			ReplaceAll(aNewVersion, "%SPEED%", std::to_string(aMultiplier));
 			ReplaceAll(aNewVersion, "%AR%", std::to_string(aOsuFile.sApproachRate));
 			ReplaceAll(aNewVersion, "%CS%", std::to_string(aOsuFile.sCircleSize));
 			ReplaceAll(aNewVersion, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
 			ReplaceAll(aNewVersion, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
+
+			//ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sFileName);
+			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aNewVersion + "]");
+			ReplaceAll(aNewFilename, "%VER%", aOsuFile.sVersion);
+			ReplaceAll(aNewFilename, "%SPEED%", std::to_string(aMultiplier));
+			ReplaceAll(aNewFilename, "%AR%", std::to_string(aOsuFile.sApproachRate));
+			ReplaceAll(aNewFilename, "%CS%", std::to_string(aOsuFile.sCircleSize));
+			ReplaceAll(aNewFilename, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
+			ReplaceAll(aNewFilename, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
+			if (aNewFilename.find(".osu") == std::string::npos)
+				aNewFilename += ".osu";
+			char lIllegalChars[] = "\\/:*?\"<>|";
+			for(uint32_t i = 0; i < strlen(lIllegalChars); ++i)
+				aNewFilename.erase(std::remove(aNewFilename.begin(), aNewFilename.end(), lIllegalChars[i]));
+
+
 
 			auto lSongPath = osu_tools::func::get_beatmap_directory();
 			lSongPath += aOsuFile.sFolderName;

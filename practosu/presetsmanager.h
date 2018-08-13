@@ -13,4 +13,5 @@ public:
 
 private:
 	Ui::presetsmanager ui;
+	void savePreset();
 };

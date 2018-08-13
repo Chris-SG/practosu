@@ -35,7 +35,9 @@ practosu::practosu(QWidget *parent)
 	connect(ui.speedText, &QLineEdit::textChanged, this, &practosu::updateAudio);
 	connect(ui.editPresets, &QPushButton::clicked, this, &practosu::editPresets);
 
-	connect(ui.presetsList, SIGNAL(activated(int)), this, SLOT(loadPreset()));
+	connect(ui.presetsList, &QComboBox::currentTextChanged, this, &practosu::loadPreset);
+
+	loadPresetList();
 }
 
 void practosu::loadSelectedMap()
@@ -63,12 +65,16 @@ void practosu::loadPresetList()
 {
 	auto lPresets = presets::presetNames();
 	ui.presetsList->clear();
+	ui.presetsList->addItem("");
 	for (auto lPreset : lPresets)
 		ui.presetsList->addItem(QString::fromStdString(lPreset));
+	ui.presetsList->setCurrentIndex(0);
 }
 
 void practosu::loadPreset()
 {
+	if (ui.presetsList->currentIndex() == 0)
+		return;
 	preset lPreset = presets::getPresetByName(ui.presetsList->currentText().toStdString());
 	if (lPreset.sPresetName.empty())
 		return;
@@ -78,27 +84,27 @@ void practosu::loadPreset()
 		ui.versionText->setText(QString::fromStdString(lPreset.sVersion));
 	if (!lPreset.sCreator.empty())
 		ui.creatorText->setText(QString::fromStdString(lPreset.sCreator));
-	if(mCurrentMap.sBeatmapVersion>=13)
+	if(mCurrentMap.sBeatmapVersion<13)
 	{
 		if (lPreset.sAR != -1)
 			ui.arSlider->setValue(std::round(lPreset.sAR / 10));
 		if (lPreset.sCS != -1)
-			ui.csSlider->setValue(std::round(lPreset.sAR / 10));
+			ui.csSlider->setValue(std::round(lPreset.sCS / 10));
 		if (lPreset.sOD != -1)
-			ui.odSlider->setValue(std::round(lPreset.sAR / 10));
+			ui.odSlider->setValue(std::round(lPreset.sOD / 10));
 		if (lPreset.sHP != -1)
-			ui.hpSlider->setValue(std::round(lPreset.sAR / 10));
+			ui.hpSlider->setValue(std::round(lPreset.sHP / 10));
 	}
 	else
 	{
 		if (lPreset.sAR != -1)
 			ui.arSlider->setValue(lPreset.sAR);
 		if (lPreset.sCS != -1)
-			ui.csSlider->setValue(lPreset.sAR);
+			ui.csSlider->setValue(lPreset.sCS);
 		if (lPreset.sOD != -1)
-			ui.odSlider->setValue(lPreset.sAR);
+			ui.odSlider->setValue(lPreset.sOD);
 		if (lPreset.sHP != -1)
-			ui.hpSlider->setValue(lPreset.sAR);
+			ui.hpSlider->setValue(lPreset.sHP);
 	}
 	if (lPreset.sSpeed != -1.0)
 		ui.speedText->setText(QString::number(lPreset.sSpeed));
@@ -108,6 +114,8 @@ void practosu::editPresets()
 {
 	presetsmanager * lMgr = new presetsmanager;
 	lMgr->show();
+	lMgr->setAttribute(Qt::WA_DeleteOnClose);
+	connect(lMgr, &QWidget::destroyed, this, &practosu::loadPresetList);
 }
 
 void practosu::loadMap(fs::path aPath)

@@ -8,18 +8,26 @@ void pollKeyboard(practosu& aWindow)
 	bool lPressed = false;
 	while(1)
 	{
-		if(GetAsyncKeyState(VK_F11) && !lPressed)
+		try
 		{
-			HWND lWnd = reinterpret_cast<HWND>(aWindow.winId());
-			lPressed = true;
-			aWindow.pressLoadMap();
-			SetForegroundWindow(lWnd);
-			Sleep(1000);
+			if (GetAsyncKeyState(VK_F11) && !lPressed)
+			{
+				HWND lWnd = reinterpret_cast<HWND>(aWindow.winId());
+				lPressed = true;
+				aWindow.pressLoadMap();
+				SetActiveWindow(lWnd);
+				SetForegroundWindow(lWnd);
+				Sleep(1000);
+			}
+			else
+			{
+				lPressed = false;
+				std::this_thread::yield();
+			}
 		}
-		else
+		catch (std::exception& e)
 		{
-			lPressed =false;
-			std::this_thread::yield();
+			return;
 		}
 	}
 }

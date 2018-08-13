@@ -21,6 +21,7 @@ namespace presets
 
 	void initialize();
 	std::string convertToString(preset aPreset);
+	void writePreset(preset aPreset);
 	preset convertToPreset(std::string aString);
 	preset getPresetByName(std::string aName);
 	std::vector<std::string> presetNames();
