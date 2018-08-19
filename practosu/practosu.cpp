@@ -35,8 +35,14 @@ practosu::practosu(QWidget *parent)
 	connect(ui.speedText, &QLineEdit::textChanged, this, &practosu::updateAudio);
 	connect(ui.editPresets, &QPushButton::clicked, this, &practosu::editPresets);
 
+	connect(ui.actionQuit, &QAction::triggered, this, &practosu::close);
+
 	connect(ui.presetsList, &QComboBox::currentTextChanged, this, &practosu::loadPreset);
 
+	ui.label_11->setTextInteractionFlags(Qt::TextBrowserInteraction);
+	ui.label_11->setOpenExternalLinks(true);
+	ui.success->setVisible(false);
+	
 	loadPresetList();
 }
 
@@ -45,6 +51,7 @@ void practosu::loadSelectedMap()
 	try
 	{
 		loadMap(osu_tools::func::get_current_beatmap());
+		loadPresetList();
 	}
 	catch(std::exception& e)
 	{
@@ -69,6 +76,33 @@ void practosu::loadPresetList()
 	for (auto lPreset : lPresets)
 		ui.presetsList->addItem(QString::fromStdString(lPreset));
 	ui.presetsList->setCurrentIndex(0);
+}
+
+void practosu::resetUI()
+{
+	clearCurrentMap();
+
+	ui.currentMap->setText("");
+	ui.audioText->setText("");
+	ui.fileText->setText("");
+	ui.creatorText->setText("");
+	ui.versionText->setText("");
+
+	ui.presetsList->setCurrentIndex(0);
+
+	ui.hpSlider->setValue(0);
+	ui.csSlider->setValue(0);
+	ui.odSlider->setValue(0);
+	ui.arSlider->setValue(0);
+	ui.speedText->setText("");
+}
+
+void practosu::clearCurrentMap()
+{
+	for (std::vector<hit_object*>::iterator it = mCurrentMap.sHitObjects.begin(); it != mCurrentMap.sHitObjects.end(); ++it)
+		delete(*it);
+	mCurrentMap.sHitObjects.clear();
+	mCurrentMap = mEmptyMap;
 }
 
 void practosu::loadPreset()
@@ -120,6 +154,9 @@ void practosu::editPresets()
 
 void practosu::loadMap(fs::path aPath)
 {
+	clearCurrentMap();
+	ui.success->setVisible(false);
+
 	mCurrentMap = osu_tools::file_parser::parse_osu_file(aPath);
 	ui.currentMap->setText(QString::fromStdString(mCurrentMap.sFileName));
 	ui.audioText->setText(QString::fromStdString(mCurrentMap.sAudioFilename));
@@ -151,15 +188,15 @@ void practosu::loadMap(fs::path aPath)
 		ui.csSlider->setMaximum(10);
 		ui.odSlider->setMaximum(10);
 		ui.arSlider->setMaximum(10);
-		ui.hpSlider->setValue(mCurrentMap.sHPDrainRate);
-		ui.csSlider->setValue(mCurrentMap.sCircleSize);
-		ui.odSlider->setValue(mCurrentMap.sOverallDifficulty);
+		ui.hpSlider->setValue(static_cast<int>(mCurrentMap.sHPDrainRate));
+		ui.csSlider->setValue(static_cast<int>(mCurrentMap.sCircleSize));
+		ui.odSlider->setValue(static_cast<int>(mCurrentMap.sOverallDifficulty));
 		if (mCurrentMap.sApproachRate == -1.0)
 			ui.arSlider->setDisabled(true);
 		else
 		{
 			ui.arSlider->setDisabled(false);
-			ui.arSlider->setValue(mCurrentMap.sApproachRate);
+			ui.arSlider->setValue(static_cast<int>(mCurrentMap.sApproachRate));
 		}
 	}
 
@@ -170,6 +207,10 @@ void practosu::writeFile()
 {
 	try
 	{
+		mCurrentMap.sApproachRate = std::stof(ui.arLabel->text().toStdString());
+		mCurrentMap.sOverallDifficulty = std::stof(ui.odLabel->text().toStdString());
+		mCurrentMap.sHPDrainRate = std::stof(ui.hpLabel->text().toStdString());
+		mCurrentMap.sCircleSize = std::stof(ui.csLabel->text().toStdString());
 		//mCurrentMap.sFileName = ui.fileText->text().toStdString();
 		mCurrentMap.sCreator = ui.creatorText->text().toStdString();
 
@@ -177,6 +218,8 @@ void practosu::writeFile()
 			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), ui.versionText->text().toStdString());
 		else
 			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), ui.versionText->text().toStdString(), std::stof(ui.speedText->text().toStdString()));
+		resetUI();
+		ui.success->setVisible(true);
 	}
 	catch (std::exception& e)
 	{
@@ -190,7 +233,9 @@ void practosu::writeFile()
 
 void practosu::updateAudio()
 {
-	if (std::stof(ui.speedText->text().toStdString()) == 1.0)
+	if(ui.speedText->text().isEmpty())
+		ui.audioText->setText(QString::fromStdString(mCurrentMap.sAudioFilename));
+	else if (std::stof(ui.speedText->text().toStdString()) == 1.0)
 		ui.audioText->setText(QString::fromStdString(mCurrentMap.sAudioFilename));
 	else
 	{
@@ -216,7 +261,6 @@ void practosu::updateHP()
 	std::stringstream lStream;
 	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.hpSlider->maximum() / 10.0);
 	ui.hpLabel->setText(QString::fromStdString(lStream.str()));
-	mCurrentMap.sHPDrainRate = stof(lStream.str());
 }
 
 void practosu::updateCS()
@@ -226,7 +270,6 @@ void practosu::updateCS()
 	std::stringstream lStream;
 	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.csSlider->maximum() / 10.0);
 	ui.csLabel->setText(QString::fromStdString(lStream.str()));
-	mCurrentMap.sCircleSize = stof(lStream.str());
 }
 
 void practosu::updateOD()
@@ -236,7 +279,6 @@ void practosu::updateOD()
 	std::stringstream lStream;
 	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.odSlider->maximum() / 10.0);
 	ui.odLabel->setText(QString::fromStdString(lStream.str()));
-	mCurrentMap.sOverallDifficulty = stof(lStream.str());
 }
 
 void practosu::updateAR()
@@ -246,7 +288,6 @@ void practosu::updateAR()
 	std::stringstream lStream;
 	lStream << std::fixed << std::setprecision(1) << static_cast<double>(lPosition) / (ui.arSlider->maximum() / 10.0);
 	ui.arLabel->setText(QString::fromStdString(lStream.str()));
-	mCurrentMap.sApproachRate = stof(lStream.str());
 }
 
 void poll();

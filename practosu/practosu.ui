@@ -475,13 +475,19 @@
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>270</y>
-      <width>211</width>
-      <height>41</height>
+      <y>260</y>
+      <width>231</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="text">
-     <string>i don't know how to make ui lol</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For any questions, suggestions or support, please contact me:&lt;br/&gt;&lt;a href=&quot;https://osu.ppy.sh/users/1881685&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Bauxe&lt;/span&gt;&lt;/a&gt; in osu!&lt;br/&gt;&lt;a href=&quot;https://twitter.com/LykaBauxe&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;@lykabauxe&lt;/span&gt;&lt;/a&gt; on Twitter&lt;br/&gt;&lt;a href=&quot;https://discord.gg/Pz39kCS&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://discord.gg/Pz39kCS&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QComboBox" name="presetsList">
@@ -523,7 +529,28 @@
      </rect>
     </property>
     <property name="text">
-     <string>Edit Presets</string>
+     <string>New Preset</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="success">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>350</y>
+      <width>47</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <italic>true</italic>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel { color : green }</string>
+    </property>
+    <property name="text">
+     <string>Success!</string>
     </property>
    </widget>
   </widget>

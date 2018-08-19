@@ -84,10 +84,10 @@ struct timing_point
 
 struct hit_object_extras
 {
-	uint32_t sSampleSet = -1;
-	uint32_t sAdditionSet = -1;
-	uint32_t sCustomIndex = -1;
-	uint32_t sSampleVolume = -1;
+	uint32_t sSampleSet = 0;
+	uint32_t sAdditionSet = 0;
+	uint32_t sCustomIndex = 0;
+	uint32_t sSampleVolume = 0;
 	std::string sFilename;
 };
 

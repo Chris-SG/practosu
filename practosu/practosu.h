@@ -18,7 +18,7 @@ public:
 
 private:
 	osu_file mCurrentMap;
-	osu_file mModifiedMap;
+	const struct osu_file mEmptyMap;
 
 	Ui::practosuClass ui;
 private slots:
@@ -34,5 +34,8 @@ private slots:
 	void loadPresetList();
 	void loadPreset();
 	void editPresets();
+
+	void resetUI();
+	void clearCurrentMap();
 };
 

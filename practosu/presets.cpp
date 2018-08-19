@@ -10,7 +10,7 @@ namespace presets
 	void initialize()
 	{
 		fstream lFileStream;
-		lFileStream.open("presets.csv", fstream::in | fstream::out);
+		lFileStream.open("presets.txt", fstream::in | fstream::out);
 
 		std::string lString;
 		mPresets.clear();
@@ -80,7 +80,7 @@ namespace presets
 	{
 		auto lPreset = convertToString(aPreset);
 		fstream lFileStream;
-		lFileStream.open("presets.csv", fstream::in | fstream::out | fstream::app);
+		lFileStream.open("presets.txt", fstream::in | fstream::out | fstream::app);
 		lFileStream << lPreset << std::endl;
 		lFileStream.close();
 	}

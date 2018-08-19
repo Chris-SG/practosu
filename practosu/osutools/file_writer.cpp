@@ -4,6 +4,8 @@
 #include "file_structs.hpp"
 #include "file_changer.hpp"
 
+#include <sstream>
+
 using namespace std;
 namespace fs = std::experimental::filesystem;
 
@@ -22,21 +24,37 @@ namespace osu_tools
 
 		bool write_file(osu_file& aOsuFile, std::string& aNewFilename, std::string& aNewAudioFilename, std::string& aNewVersion, const float& aMultiplier)
 		{
-			ReplaceAll(aNewVersion, "%VER%", aOsuFile.sVersion);
-			ReplaceAll(aNewVersion, "%SPEED%", std::to_string(aMultiplier));
-			ReplaceAll(aNewVersion, "%AR%", std::to_string(aOsuFile.sApproachRate));
-			ReplaceAll(aNewVersion, "%CS%", std::to_string(aOsuFile.sCircleSize));
-			ReplaceAll(aNewVersion, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
-			ReplaceAll(aNewVersion, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
+			std::stringstream lSs;
 
-			//ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sFileName);
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.sApproachRate;
+			ReplaceAll(aNewVersion, "%AR%", lSs.str());
+			ReplaceAll(aNewFilename, "%AR%", lSs.str());
+			std::stringstream().swap(lSs);
+
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.sCircleSize;
+			ReplaceAll(aNewVersion, "%CS%", lSs.str());
+			ReplaceAll(aNewFilename, "%CS%", lSs.str());
+			std::stringstream().swap(lSs);
+
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.sOverallDifficulty;
+			ReplaceAll(aNewVersion, "%OD%", lSs.str());
+			ReplaceAll(aNewFilename, "%OD%", lSs.str());
+			std::stringstream().swap(lSs);
+
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.sHPDrainRate;
+			ReplaceAll(aNewVersion, "%HP%", lSs.str());
+			ReplaceAll(aNewFilename, "%HP%", lSs.str());
+			std::stringstream().swap(lSs);
+
+			string lSpeed = std::to_string(aMultiplier);
+			lSpeed.erase(lSpeed.find_last_not_of('0') + 1, std::string::npos);
+			ReplaceAll(aNewVersion, "%SPEED%", lSs.str());
+			ReplaceAll(aNewFilename, "%SPEED%", lSs.str());
+
+			ReplaceAll(aNewVersion, "%VER%", aOsuFile.sVersion);
+
 			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aNewVersion + "]");
 			ReplaceAll(aNewFilename, "%VER%", aOsuFile.sVersion);
-			ReplaceAll(aNewFilename, "%SPEED%", std::to_string(aMultiplier));
-			ReplaceAll(aNewFilename, "%AR%", std::to_string(aOsuFile.sApproachRate));
-			ReplaceAll(aNewFilename, "%CS%", std::to_string(aOsuFile.sCircleSize));
-			ReplaceAll(aNewFilename, "%OD%", std::to_string(aOsuFile.sOverallDifficulty));
-			ReplaceAll(aNewFilename, "%HP%", std::to_string(aOsuFile.sHPDrainRate));
 			if (aNewFilename.find(".osu") == std::string::npos)
 				aNewFilename += ".osu";
 			char lIllegalChars[] = "\\/:*?\"<>|";
