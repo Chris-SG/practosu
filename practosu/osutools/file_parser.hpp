@@ -7,19 +7,19 @@ namespace osu_tools
 {
 	namespace file_parser
 	{
-		osu_file parse_osu_file(std::experimental::filesystem::path &pFilePath);
+		osu_file parse_osu_file(std::experimental::filesystem::path &p_file_path);
 
-		void read_file_general(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_editor(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_metadata(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_difficulty(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_events(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_timingpoints(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_colours(std::ifstream &lFs, osu_file &lOsuFile);
-		void read_file_hitobjects(std::ifstream &lFs, osu_file &lOsuFile);
+		void read_file_general(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_editor(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_metadata(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_difficulty(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_events(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_timingpoints(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_colours(std::ifstream &l_fs, osu_file &l_osu_file);
+		void read_file_hitobjects(std::ifstream &l_fs, osu_file &l_osu_file);
 
-		bool is_circle(hit_object* lObject);
-		bool is_slider(hit_object* lObject);
-		bool is_spinner(hit_object* lObject);
+		bool is_circle(hit_object* l_object);
+		bool is_slider(hit_object* l_object);
+		bool is_spinner(hit_object* l_object);
 	}
 }

@@ -13,7 +13,7 @@ namespace osu_tools
 		bool parse_osu_db(fs::path &pFilePath)
 		{
 			// confirm file path exists and db is not cached
-			if (!aDbCached)
+			if (!a_db_cached)
 			{
 				if (!fs::exists(pFilePath))
 					throw std::invalid_argument("osu.db file does not exist in path " + pFilePath.string());
@@ -25,122 +25,123 @@ namespace osu_tools
 					try
 					{
 						// parse general information
-						aCachedDb.sOsuVersion = get_int(lFile);
-						aCachedDb.sFolderCount = get_int(lFile);
-						aCachedDb.sAccountUnlocked = get_bool(lFile);
-						aCachedDb.sUnlockTime = get_long_long(lFile);
-						aCachedDb.sPlayerName = get_string(lFile);
-						aCachedDb.sBeatmapCount = get_int(lFile);
-						aCachedDb.sFileDetails = vector<tuple<uint32_t, string, string>>();
-						//lDb.sBeatmaps = vector<beatmap>();
+						a_cached_db.s_osu_version = get_int(lFile);
+						a_cached_db.s_folder_count = get_int(lFile);
+						a_cached_db.s_account_unlocked = get_bool(lFile);
+						a_cached_db.s_unlock_time = get_long_long(lFile);
+						a_cached_db.s_player_name = get_string(lFile);
+						a_cached_db.s_beatmap_count = get_int(lFile);
+						a_cached_db.s_file_details = vector<tuple<uint32_t, string, string>>();
+						//lDb.s_beatmaps = vector<beatmap>();
 						// iterate over beatmap entries
-						for (uint32_t i = 0; i < aCachedDb.sBeatmapCount; ++i)
+						for (uint32_t i = 0; i < a_cached_db.s_beatmap_count; ++i)
 						{
 							// parse beatmap information
 							beatmap lBeatmap;
-							lBeatmap.sEntrySz = get_int(lFile);
-							lBeatmap.sArtist = get_string(lFile);
-							lBeatmap.sArtistUnicode = get_string(lFile);
-							lBeatmap.sTitle = get_string(lFile);
-							lBeatmap.sTitleUnicode = get_string(lFile);
-							lBeatmap.sCreator = get_string(lFile);
-							lBeatmap.sDifficulty = get_string(lFile);
-							lBeatmap.sAudioName = get_string(lFile);
-							lBeatmap.sMD5 = get_string(lFile);
-							lBeatmap.sOsuFilename = get_string(lFile);
-							lBeatmap.sRankedStatus = get_char(lFile);
-							lBeatmap.sNumHitcircles = get_short(lFile);
-							lBeatmap.sNumSliders = get_short(lFile);
-							lBeatmap.sNumSpinners = get_short(lFile);
-							lBeatmap.sLastModification = get_long_long(lFile);
+							lBeatmap.s_entry_sz = get_int(lFile);
+							lBeatmap.s_artist = get_string(lFile);
+							lBeatmap.s_artist_unicode = get_string(lFile);
+							lBeatmap.s_title = get_string(lFile);
+							lBeatmap.s_title_unicode = get_string(lFile);
+							lBeatmap.s_creator = get_string(lFile);
+							lBeatmap.s_difficulty = get_string(lFile);
+							lBeatmap.s_audio_name = get_string(lFile);
+							lBeatmap.s_md5 = get_string(lFile);
+							lBeatmap.s_osu_filename = get_string(lFile);
+							lBeatmap.s_ranked_status = get_char(lFile);
+							lBeatmap.s_num_hitcircles = get_short(lFile);
+							lBeatmap.s_num_sliders = get_short(lFile);
+							lBeatmap.s_num_spinners = get_short(lFile);
+							lBeatmap.s_last_modification = get_long_long(lFile);
 							//						if (lBeatmap.sLastModification >= uint64_t(635378688000000000))
 							if (1)
 							{
-								lBeatmap.sARFloat = get_float(lFile);
-								lBeatmap.sCSFloat = get_float(lFile);
-								lBeatmap.sHPFloat = get_float(lFile);
-								lBeatmap.sODFloat = get_float(lFile);
+								lBeatmap.s_ar_float = get_float(lFile);
+								lBeatmap.s_cs_float = get_float(lFile);
+								lBeatmap.s_hp_float = get_float(lFile);
+								lBeatmap.s_od_float = get_float(lFile);
 
 							}
 							else
 							{
-								lBeatmap.sAR = get_char(lFile);
-								lBeatmap.sCS = get_char(lFile);
-								lBeatmap.sHP = get_char(lFile);
-								lBeatmap.sOD = get_char(lFile);
+								lBeatmap.s_ar = get_char(lFile);
+								lBeatmap.s_cs = get_char(lFile);
+								lBeatmap.s_hp = get_char(lFile);
+								lBeatmap.s_od = get_char(lFile);
 							}
-							lBeatmap.sSliderVelocity = get_double(lFile);
+							lBeatmap.s_slider_velocity = get_double(lFile);
 							//if (lBeatmap.sLastModification >= uint64_t(635378688000000000))
 							if (1)
 							{
-								lBeatmap.sRatingsStd = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.sRatingsStd; ++j)
-									lBeatmap.sStarRatingStd.push_back(get_int_double_pair(lFile));
-								lBeatmap.sRatingsTaiko = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.sRatingsTaiko; ++j)
-									lBeatmap.sStarRatingTaiko.push_back(get_int_double_pair(lFile));
-								lBeatmap.sRatingsCTB = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.sRatingsCTB; ++j)
-									lBeatmap.sStarRatingCTB.push_back(get_int_double_pair(lFile));
-								lBeatmap.sRatingsMania = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.sRatingsMania; ++j)
-									lBeatmap.sStarRatingMania.push_back(get_int_double_pair(lFile));
+								lBeatmap.s_ratings_std = get_int(lFile);
+								for (uint32_t j = 0; j < lBeatmap.s_ratings_std; ++j)
+									lBeatmap.s_star_rating_std.push_back(get_int_double_pair(lFile));
+								lBeatmap.s_ratings_taiko = get_int(lFile);
+								for (uint32_t j = 0; j < lBeatmap.s_ratings_taiko; ++j)
+									lBeatmap.s_star_rating_taiko.push_back(get_int_double_pair(lFile));
+								lBeatmap.s_ratings_ctb = get_int(lFile);
+								for (uint32_t j = 0; j < lBeatmap.s_ratings_ctb; ++j)
+									lBeatmap.s_star_rating_ctb.push_back(get_int_double_pair(lFile));
+								lBeatmap.s_ratings_mania = get_int(lFile);
+								for (uint32_t j = 0; j < lBeatmap.s_ratings_mania; ++j)
+									lBeatmap.s_star_rating_mania.push_back(get_int_double_pair(lFile));
 							}
-							lBeatmap.sDraintime = get_int(lFile);
-							lBeatmap.sTotalTime = get_int(lFile);
-							lBeatmap.sPreviewTime = get_int(lFile);
-							lBeatmap.sTimingPointCount = get_int(lFile);
-							for (uint32_t j = 0; j < lBeatmap.sTimingPointCount; ++j)
-								lBeatmap.sTimingPoints.push_back(std::tuple<double, double, bool>(get_double(lFile), get_double(lFile), get_bool(lFile)));
-							lBeatmap.sBeatmapID = get_int(lFile);
-							lBeatmap.sBeatmapSetID = get_int(lFile);
-							lBeatmap.sThreadID = get_int(lFile);
-							lBeatmap.sGradeStd = get_char(lFile);
-							lBeatmap.sGradeTaiko = get_char(lFile);
-							lBeatmap.sGradeCTB = get_char(lFile);
-							lBeatmap.sGradeMania = get_char(lFile);
-							lBeatmap.sLocalOffset = get_short(lFile);
-							lBeatmap.sStackLeniency = get_float(lFile);
-							lBeatmap.sGameplayMode = get_char(lFile);
-							lBeatmap.sSource = get_string(lFile);
-							lBeatmap.sTags = get_string(lFile);
-							lBeatmap.sOnlineOffset = get_short(lFile);
-							lBeatmap.sFont = get_string(lFile);
-							lBeatmap.sPlayed = get_bool(lFile);
-							lBeatmap.sLastPlaytime = get_long_long(lFile);
-							lBeatmap.sIsOSZ2 = get_bool(lFile);
-							lBeatmap.sFolderName = get_string(lFile);
-							lBeatmap.sLastCheckedOnline = get_long_long(lFile);
-							lBeatmap.sIgnoreBeatmapSound = get_bool(lFile);
-							lBeatmap.sIgnoreBeatmapSkin = get_bool(lFile);
-							lBeatmap.sDisableSB = get_bool(lFile);
-							lBeatmap.sDisableVideo = get_bool(lFile);
-							lBeatmap.sVisualOverride = get_bool(lFile);
+							lBeatmap.s_draintime = get_int(lFile);
+							lBeatmap.s_total_time = get_int(lFile);
+							lBeatmap.s_preview_time = get_int(lFile);
+							lBeatmap.s_timing_point_count = get_int(lFile);
+							for (uint32_t j = 0; j < lBeatmap.s_timing_point_count; ++j)
+								lBeatmap.s_timing_points.push_back(std::tuple<double, double, bool>(get_double(lFile), get_double(lFile), get_bool(lFile)));
+							lBeatmap.s_beatmap_id = get_int(lFile);
+							lBeatmap.s_beatmap_set_id = get_int(lFile);
+							lBeatmap.s_thread_id = get_int(lFile);
+							lBeatmap.s_grade_std = get_char(lFile);
+							lBeatmap.s_grade_taiko = get_char(lFile);
+							lBeatmap.s_grade_ctb = get_char(lFile);
+							lBeatmap.s_grade_mania = get_char(lFile);
+							lBeatmap.s_local_offset = get_short(lFile);
+							lBeatmap.s_stack_leniency = get_float(lFile);
+							lBeatmap.s_gameplay_mode = get_char(lFile);
+							lBeatmap.s_source = get_string(lFile);
+							lBeatmap.s_tags = get_string(lFile);
+							lBeatmap.s_online_offset = get_short(lFile);
+							lBeatmap.s_font = get_string(lFile);
+							lBeatmap.s_played = get_bool(lFile);
+							lBeatmap.s_last_playtime = get_long_long(lFile);
+							lBeatmap.s_is_osz2 = get_bool(lFile);
+							lBeatmap.s_folder_name = get_string(lFile);
+							lBeatmap.s_last_checked_online = get_long_long(lFile);
+							lBeatmap.s_ignore_beatmap_sound = get_bool(lFile);
+							lBeatmap.s_ignore_beatmap_skin = get_bool(lFile);
+							lBeatmap.s_disable_sb = get_bool(lFile);
+							lBeatmap.s_disable_video = get_bool(lFile);
+							lBeatmap.s_visual_override = get_bool(lFile);
 							//if (lBeatmap.sLastModification < uint64_t(635378688000000000))
 							if (0)
-								lBeatmap.sUnknown = get_short(lFile); // only prior to 20140609
-							lBeatmap.sLastModificationTime = get_int(lFile);
-							lBeatmap.sManiaScrollSpeed = get_char(lFile);
+								lBeatmap.s_unknown = get_short(lFile); // only prior to 20140609
+							lBeatmap.s_last_modification_time = get_int(lFile);
+							lBeatmap.s_mania_scroll_speed = get_char(lFile);
 
-							//lDb.sBeatmaps.push_back(lBeatmap);
-							aCachedDb.sFileDetails.push_back(std::tuple<uint32_t, string, string>(lBeatmap.sBeatmapID, lBeatmap.sFolderName, lBeatmap.sOsuFilename));
+							//lDb.s_beatmaps.push_back(lBeatmap);
+							a_cached_db.s_file_details.push_back(std::tuple<uint32_t, string, string>(lBeatmap.s_beatmap_id, lBeatmap.s_folder_name, lBeatmap.s_osu_filename));
 						}
 					}
 					catch (std::exception& e)
 					{
-						aCachedDb.sFileDetails.clear();
-						aCachedDb = aEmptyStruct;
+						a_cached_db.s_file_details.clear();
+						a_cached_db = a_empty_struct;
 						throw e;
 					}
 
 					lFile.close();
-					aDbCached = true;
+					a_db_cached = true;
 					return true;
 				}
 			}
 			return false;
 		}
 
+		// Read a float
 		float get_float(std::ifstream &pFs)
 		{
 			float lRet;
@@ -148,6 +149,7 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read a double
 		double get_double(std::ifstream &pFs)
 		{
 			double lRet;
@@ -155,6 +157,7 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read a uint8_t
 		uint8_t get_char(std::ifstream &pFs)
 		{
 			uint8_t lRet;
@@ -162,6 +165,7 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read a short
 		uint16_t get_short(std::ifstream &pFs)
 		{
 			uint16_t lRet;
@@ -169,6 +173,7 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read a int
 		uint32_t get_int(std::ifstream &pFs)
 		{
 			uint32_t lRet;
@@ -176,6 +181,7 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read a long long
 		uint64_t get_long_long(std::ifstream &pFs)
 		{
 			uint64_t lRet;
@@ -183,12 +189,14 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read a bool
 		bool get_bool(std::ifstream &pFs)
 		{
 
 			return (get_char(pFs) ? true : false);
 		}
 
+		// Read a string
 		std::string get_string(std::ifstream &pFs)
 		{
 			// all strings begin with 0x00 if empty, or 0x0b if otherwise
@@ -216,6 +224,7 @@ namespace osu_tools
 			return lRet;
 		}
 
+		// Read an int-double pair
 		std::pair<int, double> get_int_double_pair(std::ifstream &pFs)
 		{
 			// int-double pair contains 0x08 int 0x0d double

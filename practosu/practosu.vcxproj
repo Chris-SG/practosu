@@ -123,6 +123,7 @@
     </QtRcc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="audiocleaner.cpp" />
     <ClCompile Include="dbprogress.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="osutools\db_parser.cpp" />
@@ -145,6 +146,12 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(ProjectDir)\.;$(ProjectDir)\osutools</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
     </QtMoc>
+    <QtMoc Include="audiocleaner.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(ProjectDir)\.;$(ProjectDir)osutools</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName)\.;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(ProjectDir)\.;$(ProjectDir)\osutools</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">UNICODE;_UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WIDGETS_LIB</Define>
+    </QtMoc>
     <ClInclude Include="osutools\db_parser.hpp" />
     <ClInclude Include="osutools\file_changer.hpp" />
     <ClInclude Include="osutools\file_parser.hpp" />
@@ -162,6 +169,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="audiocleaner.ui" />
     <QtUic Include="dbprogress.ui" />
     <QtUic Include="practosu.ui" />
     <QtUic Include="presetsmanager.ui" />

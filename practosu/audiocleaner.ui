@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>audiocleaner</class>
+ <widget class="QWidget" name="audiocleaner">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>563</width>
+    <height>309</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>audiocleaner</string>
+  </property>
+  <widget class="QListWidget" name="songNames">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>256</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>20</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Audio Name:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="audioName">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>40</y>
+     <width>261</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>70</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Full Path:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="filePath">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>90</y>
+     <width>261</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="deleteInactive">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>270</y>
+     <width>151</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Delete Inactive Audio Files</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="reload">
+   <property name="geometry">
+    <rect>
+     <x>394</x>
+     <y>240</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reload List</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

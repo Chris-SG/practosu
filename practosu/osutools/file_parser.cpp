@@ -24,10 +24,10 @@ namespace osu_tools
 				{
 					std::string lFilePath = pFilePath.string();
 					uint32_t lPos = lFilePath.rfind("\\");
-					lOsuFile.sFileName = lFilePath.substr(lPos + 1, lFilePath.size());
+					lOsuFile.s_file_name = lFilePath.substr(lPos + 1, lFilePath.size());
 					lFilePath.erase(lPos, lFilePath.size());
 					lPos = lFilePath.rfind("\\");
-					lOsuFile.sFolderName = lFilePath.substr(lPos + 1, lFilePath.size());
+					lOsuFile.s_folder_name = lFilePath.substr(lPos + 1, lFilePath.size());
 
 					// first line is the file format // can files begin with an empty line?
 					std::string lLine;
@@ -43,7 +43,7 @@ namespace osu_tools
 					// add file version to struct
 					lLine.erase(0, lFound + 17);
 					int sVersion = stoi(lLine);
-					lOsuFile.sBeatmapVersion = static_cast<uint8_t>(sVersion);
+					lOsuFile.s_beatmap_version = static_cast<uint8_t>(sVersion);
 					// go through all different sections
 					while (!lFile.eof() && getline(lFile, lLine))
 					{
@@ -87,30 +87,30 @@ namespace osu_tools
 					lToken = lLine.substr(0, lPos);
 					lLine.erase(0, lPos + lDilimiter.length());
 					if (lToken == "AudioFilename")
-						lOsuFile.sAudioFilename = lLine;
+						lOsuFile.s_audio_filename = lLine;
 					else if (lToken == "SampleSet")
-						lOsuFile.sSampleSet = lLine;
+						lOsuFile.s_sample_set = lLine;
 					else if (lToken == "StackLeniency")
-						lOsuFile.sStackLeniency = stof(lLine);
+						lOsuFile.s_stack_leniency = stof(lLine);
 					else if (lToken == "SkinPreference")
-						lOsuFile.sSkinPreference = lLine;
+						lOsuFile.s_skin_preference = lLine;
 					else
 					{
 						int sInt = stoi(lLine);
 						if (lToken == "AudioLeadIn")
-							lOsuFile.sAudioLeadIn = sInt;
+							lOsuFile.s_audio_lead_in = sInt;
 						else if (lToken == "PreviewTime")
-							lOsuFile.sPreviewTime = sInt;
+							lOsuFile.s_preview_time = sInt;
 						else if (lToken == "Mode")
-							lOsuFile.sMode = static_cast<uint8_t>(sInt);
+							lOsuFile.s_mode = static_cast<uint8_t>(sInt);
 						else if (lToken == "Countdown")
-							lOsuFile.sCountdown = static_cast<uint8_t>(sInt);
+							lOsuFile.s_countdown = static_cast<uint8_t>(sInt);
 						else if (lToken == "LetterboxInBreaks")
-							lOsuFile.sLetterboxInBreaks = static_cast<uint8_t>(sInt);
+							lOsuFile.s_letterbox_in_breaks = static_cast<uint8_t>(sInt);
 						else if (lToken == "WidescreenStoryboard")
-							lOsuFile.sWidescreenStoryboard = static_cast<uint8_t>(sInt);
+							lOsuFile.s_widescreen_storyboard = static_cast<uint8_t>(sInt);
 						else if (lToken == "EpilepsyWarning")
-							lOsuFile.sEpilepsyWarning = static_cast<uint8_t>(sInt);
+							lOsuFile.s_epilepsy_warning = static_cast<uint8_t>(sInt);
 					}
 				}
 			}
@@ -142,22 +142,22 @@ namespace osu_tools
 						int lNum;
 						while (lSs >> lNum)
 						{
-							lOsuFile.sBookmarks.push_back(lNum);
+							lOsuFile.s_bookmarks.push_back(lNum);
 							if (lSs.peek() == ',')
 								lSs.ignore();
 						}
 					}
 					else if (lToken == "DistanceSpacing")
-						lOsuFile.sDistanceSpacing = stof(lLine);
+						lOsuFile.s_distance_spacing = stof(lLine);
 					else if (lToken == "TimelineZoom")
-						lOsuFile.sTimelineZoom = stof(lLine);
+						lOsuFile.s_timeline_zoom = stof(lLine);
 					else
 					{
 						int sInt = stoi(lLine);
 						if (lToken == "BeatDivisor")
-							lOsuFile.sBeatDivisor = static_cast<uint8_t>(sInt);
+							lOsuFile.s_beat_divisor = static_cast<uint8_t>(sInt);
 						else if (lToken == "GridSize")
-							lOsuFile.sGridSize = static_cast<uint8_t>(sInt);
+							lOsuFile.s_grid_size = static_cast<uint8_t>(sInt);
 					}
 				}
 			}
@@ -183,25 +183,25 @@ namespace osu_tools
 					lToken = lLine.substr(0, lPos);
 					lLine.erase(0, lPos + lDilimiter.length());
 					if (lToken == "Title")
-						lOsuFile.sTitle = lLine;
+						lOsuFile.s_title = lLine;
 					else if (lToken == "TitleUnicode")
-						lOsuFile.sTitleUnicode = lLine;
+						lOsuFile.s_title_unicode = lLine;
 					else if (lToken == "Artist")
-						lOsuFile.sArtist = lLine;
+						lOsuFile.s_artist = lLine;
 					else if (lToken == "ArtistUnicode")
-						lOsuFile.sArtistUnicode = lLine;
+						lOsuFile.s_artist_unicode = lLine;
 					else if (lToken == "Creator")
-						lOsuFile.sCreator = lLine;
+						lOsuFile.s_creator = lLine;
 					else if (lToken == "Version")
-						lOsuFile.sVersion = lLine;
+						lOsuFile.s_version = lLine;
 					else if (lToken == "Source")
-						lOsuFile.sSource = lLine;
+						lOsuFile.s_source = lLine;
 					else if (lToken == "Tags")
-						lOsuFile.sTags = lLine;
+						lOsuFile.s_tags = lLine;
 					else if (lToken == "BeatmapID")
-						lOsuFile.sBeatmapID = stoi(lLine);
+						lOsuFile.s_beatmap_id = stoi(lLine);
 					else if (lToken == "BeatmapSetID")
-						lOsuFile.sBeatmapSetID = stoi(lLine);
+						lOsuFile.s_beatmap_set_id = stoi(lLine);
 				}
 			}
 			catch (std::exception& e)
@@ -226,17 +226,17 @@ namespace osu_tools
 					lToken = lLine.substr(0, lPos);
 					lLine.erase(0, lPos + lDilimiter.length());
 					if (lToken == "HPDrainRate")
-						lOsuFile.sHPDrainRate = stof(lLine);
+						lOsuFile.s_hp_drain_rate = stof(lLine);
 					else if (lToken == "CircleSize")
-						lOsuFile.sCircleSize = stof(lLine);
+						lOsuFile.s_circle_size = stof(lLine);
 					else if (lToken == "OverallDifficulty")
-						lOsuFile.sOverallDifficulty = stof(lLine);
+						lOsuFile.s_overall_difficulty = stof(lLine);
 					else if (lToken == "ApproachRate")
-						lOsuFile.sApproachRate = stof(lLine);
+						lOsuFile.s_approach_rate = stof(lLine);
 					else if (lToken == "SliderMultiplier")
-						lOsuFile.sSliderMultiplier = stof(lLine);
+						lOsuFile.s_slider_multiplier = stof(lLine);
 					else if (lToken == "SliderTickRate")
-						lOsuFile.sSliderTickRate = stof(lLine);
+						lOsuFile.s_slider_tick_rate = stof(lLine);
 				}
 			}
 			catch (std::exception& e)
@@ -271,7 +271,7 @@ namespace osu_tools
 						lSs >> lTemp;
 						lSs.ignore();
 						lSs >> lTemp2;
-						lOsuFile.sBreakPeriods.push_back(pair<uint32_t, uint32_t>(lTemp, lTemp2));
+						lOsuFile.s_break_periods.push_back(pair<uint32_t, uint32_t>(lTemp, lTemp2));
 					}
 				}
 			}
@@ -293,31 +293,31 @@ namespace osu_tools
 					stringstream lSs(lLine);
 					timing_point lTP;
 					uint32_t lTemp;
-					lSs >> lTP.sOffset;
+					lSs >> lTP.s_offset;
 					lSs.ignore();
-					lSs >> lTP.sMSPerBeat;
+					lSs >> lTP.s_ms_per_beat;
 					lSs.ignore();
-					lSs >> lTP.sMeter;
-					lSs.ignore();
-					lSs >> lTemp;
-					lTP.sSampleSet = static_cast<uint8_t>(lTemp);
+					lSs >> lTP.s_meter;
 					lSs.ignore();
 					lSs >> lTemp;
-					lTP.sSampleIndex = static_cast<uint8_t>(lTemp);
+					lTP.s_sample_set = static_cast<uint8_t>(lTemp);
 					lSs.ignore();
 					lSs >> lTemp;
-					lTP.sVolume = static_cast<uint8_t>(lTemp);
+					lTP.s_sample_index = static_cast<uint8_t>(lTemp);
+					lSs.ignore();
+					lSs >> lTemp;
+					lTP.s_volume = static_cast<uint8_t>(lTemp);
 					if (lSs.peek() == ',');
 					{
 						lSs.ignore();
 						lSs >> lTemp;
-						lTP.sInherited = static_cast<uint8_t>(lTemp);
+						lTP.s_inherited = static_cast<uint8_t>(lTemp);
 						lSs.ignore();
 						lSs >> lTemp;
-						lTP.sKiai = static_cast<uint8_t>(lTemp);
+						lTP.s_kiai = static_cast<uint8_t>(lTemp);
 					}
 
-					lOsuFile.sTimingPoints.push_back(lTP);
+					lOsuFile.s_timing_points.push_back(lTP);
 				}
 			}
 			catch (std::exception& e)
@@ -349,7 +349,7 @@ namespace osu_tools
 					lSs >> lNum2;
 					lSs.ignore();
 					lSs >> lNum3;
-					lOsuFile.sColours.push_back(tuple<int, int, int>(lNum1, lNum2, lNum3));
+					lOsuFile.s_colours.push_back(tuple<int, int, int>(lNum1, lNum2, lNum3));
 				}
 			}
 			catch (std::exception& e)
@@ -386,39 +386,39 @@ namespace osu_tools
 					if (lType & (1 << 0))
 					{
 						hit_object_circle* lObject = new hit_object_circle;
-						lObject->sX = lX;
-						lObject->sY = lY;
-						lObject->sTime = lTime;
-						lObject->sType = lType;
-						lObject->sHitSounds = lHitSounds;
+						lObject->s_x = lX;
+						lObject->s_y = lY;
+						lObject->s_time = lTime;
+						lObject->s_type = lType;
+						lObject->s_hit_sounds = lHitSounds;
 
 						if (lSs.peek() == ',')
 						{
 							lSs.ignore();
-							lSs >> lObject->sExtras.sSampleSet;
+							lSs >> lObject->s_extras.s_sample_set;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sAdditionSet;
+							lSs >> lObject->s_extras.s_addition_set;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sCustomIndex;
+							lSs >> lObject->s_extras.s_custom_index;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sSampleVolume;
+							lSs >> lObject->s_extras.s_sample_volume;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sFilename;
+							lSs >> lObject->s_extras.s_filename;
 						}
 
-						lOsuFile.sHitObjects.push_back(lObject);
+						lOsuFile.s_hit_objects.push_back(lObject);
 					}
 					else if (lType & (1 << 1))
 					{
 						hit_object_slider* lObject = new hit_object_slider;
-						lObject->sX = lX;
-						lObject->sY = lY;
-						lObject->sTime = lTime;
-						lObject->sType = lType;
-						lObject->sHitSounds = lHitSounds;
+						lObject->s_x = lX;
+						lObject->s_y = lY;
+						lObject->s_time = lTime;
+						lObject->s_type = lType;
+						lObject->s_hit_sounds = lHitSounds;
 
 						lSs.ignore();
-						lSs >> lObject->sSliderType;
+						lSs >> lObject->s_slider_type;
 						while (lSs.peek() == '|')
 						{
 							lSs.ignore();
@@ -426,20 +426,20 @@ namespace osu_tools
 							lSs >> lFirst;
 							lSs.ignore();
 							lSs >> lSecond;
-							lObject->sCurvePoints.push_back(pair<uint32_t, uint32_t>(lFirst, lSecond));
+							lObject->s_curve_points.push_back(pair<uint32_t, uint32_t>(lFirst, lSecond));
 						}
 						lSs.ignore();
 						lSs >> lTemp;
-						lObject->sRepeat = static_cast<uint8_t>(lTemp);
+						lObject->s_repeat = static_cast<uint8_t>(lTemp);
 						lSs.ignore();
-						lSs >> lObject->sPixelLength;
+						lSs >> lObject->s_pixel_length;
 						if (lSs.peek() == ',')
 						{
 							do
 							{
 								lSs.ignore();
 								lSs >> lTemp;
-								lObject->sEdgeHitsounds.push_back(static_cast<uint8_t>(lTemp));
+								lObject->s_edge_hitsounds.push_back(static_cast<uint8_t>(lTemp));
 							} while (lSs.peek() == '|');
 						}
 						if (lSs.peek() == ',')
@@ -452,53 +452,53 @@ namespace osu_tools
 								lTemp_u8 = static_cast<uint8_t>(lTemp);
 								lSs.ignore();
 								lSs >> lTemp;
-								lObject->sEdgeAdditions.push_back(pair<uint8_t, uint8_t>(lTemp_u8, static_cast<uint8_t>(lTemp)));
+								lObject->s_edge_additions.push_back(pair<uint8_t, uint8_t>(lTemp_u8, static_cast<uint8_t>(lTemp)));
 							} while (lSs.peek() == '|');
 						}
 
 						if (lSs.peek() == ',')
 						{
 							lSs.ignore();
-							lSs >> lObject->sExtras.sSampleSet;
+							lSs >> lObject->s_extras.s_sample_set;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sAdditionSet;
+							lSs >> lObject->s_extras.s_addition_set;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sCustomIndex;
+							lSs >> lObject->s_extras.s_custom_index;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sSampleVolume;
+							lSs >> lObject->s_extras.s_sample_volume;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sFilename;
+							lSs >> lObject->s_extras.s_filename;
 						}
 
-						lOsuFile.sHitObjects.push_back(lObject);
+						lOsuFile.s_hit_objects.push_back(lObject);
 					}
 					else if (lType & (1 << 3))
 					{
 						hit_object_spinner* lObject = new hit_object_spinner;
-						lObject->sX = lX;
-						lObject->sY = lY;
-						lObject->sTime = lTime;
-						lObject->sType = lType;
-						lObject->sHitSounds = lHitSounds;
+						lObject->s_x = lX;
+						lObject->s_y = lY;
+						lObject->s_time = lTime;
+						lObject->s_type = lType;
+						lObject->s_hit_sounds = lHitSounds;
 
 						lSs.ignore();
-						lSs >> lObject->sEndTime;
+						lSs >> lObject->s_end_time;
 
 						if (lSs.peek() == ',')
 						{
 							lSs.ignore();
-							lSs >> lObject->sExtras.sSampleSet;
+							lSs >> lObject->s_extras.s_sample_set;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sAdditionSet;
+							lSs >> lObject->s_extras.s_addition_set;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sCustomIndex;
+							lSs >> lObject->s_extras.s_custom_index;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sSampleVolume;
+							lSs >> lObject->s_extras.s_sample_volume;
 							lSs.ignore();
-							lSs >> lObject->sExtras.sFilename;
+							lSs >> lObject->s_extras.s_filename;
 						}
 
-						lOsuFile.sHitObjects.push_back(lObject);
+						lOsuFile.s_hit_objects.push_back(lObject);
 					}
 
 				}
@@ -511,17 +511,17 @@ namespace osu_tools
 
 		bool is_circle(hit_object* lObject)
 		{
-			return (lObject->sType & (1 << 0));
+			return (lObject->s_type & (1 << 0));
 		}
 
 		bool is_slider(hit_object* lObject)
 		{
-			return (lObject->sType & (1 << 1));
+			return (lObject->s_type & (1 << 1));
 		}
 
 		bool is_spinner(hit_object* lObject)
 		{
-			return (lObject->sType & (1 << 3));
+			return (lObject->s_type & (1 << 3));
 		}
 	}
 }

@@ -37,5 +37,7 @@ private slots:
 
 	void resetUI();
 	void clearCurrentMap();
+
+	void audioCleaner();
 };
 

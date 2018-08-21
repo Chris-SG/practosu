@@ -26,22 +26,22 @@ namespace osu_tools
 		{
 			std::stringstream lSs;
 
-			lSs << std::fixed << std::setprecision(1) << aOsuFile.sApproachRate;
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.s_approach_rate;
 			ReplaceAll(aNewVersion, "%AR%", lSs.str());
 			ReplaceAll(aNewFilename, "%AR%", lSs.str());
 			std::stringstream().swap(lSs);
 
-			lSs << std::fixed << std::setprecision(1) << aOsuFile.sCircleSize;
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.s_circle_size;
 			ReplaceAll(aNewVersion, "%CS%", lSs.str());
 			ReplaceAll(aNewFilename, "%CS%", lSs.str());
 			std::stringstream().swap(lSs);
 
-			lSs << std::fixed << std::setprecision(1) << aOsuFile.sOverallDifficulty;
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.s_overall_difficulty;
 			ReplaceAll(aNewVersion, "%OD%", lSs.str());
 			ReplaceAll(aNewFilename, "%OD%", lSs.str());
 			std::stringstream().swap(lSs);
 
-			lSs << std::fixed << std::setprecision(1) << aOsuFile.sHPDrainRate;
+			lSs << std::fixed << std::setprecision(1) << aOsuFile.s_hp_drain_rate;
 			ReplaceAll(aNewVersion, "%HP%", lSs.str());
 			ReplaceAll(aNewFilename, "%HP%", lSs.str());
 			std::stringstream().swap(lSs);
@@ -51,10 +51,10 @@ namespace osu_tools
 			ReplaceAll(aNewVersion, "%SPEED%", lSs.str());
 			ReplaceAll(aNewFilename, "%SPEED%", lSs.str());
 
-			ReplaceAll(aNewVersion, "%VER%", aOsuFile.sVersion);
+			ReplaceAll(aNewVersion, "%VER%", aOsuFile.s_version);
 
-			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aNewVersion + "]");
-			ReplaceAll(aNewFilename, "%VER%", aOsuFile.sVersion);
+			ReplaceAll(aNewFilename, "%NAME%", aOsuFile.s_artist + " - " + aOsuFile.s_title + " (" + aOsuFile.s_creator + ") [" + aNewVersion + "]");
+			ReplaceAll(aNewFilename, "%VER%", aOsuFile.s_version);
 			if (aNewFilename.find(".osu") == std::string::npos)
 				aNewFilename += ".osu";
 			char lIllegalChars[] = "\\/:*?\"<>|";
@@ -64,9 +64,9 @@ namespace osu_tools
 
 
 			auto lSongPath = osu_tools::func::get_beatmap_directory();
-			lSongPath += aOsuFile.sFolderName;
+			lSongPath += aOsuFile.s_folder_name;
 			lSongPath /= aNewFilename;
-			aOsuFile.sVersion = aNewVersion;
+			aOsuFile.s_version = aNewVersion;
 
 			// if file already exists, we don't want to recreate it
 			if (fs::exists(lSongPath))
@@ -74,108 +74,108 @@ namespace osu_tools
 			if (aMultiplier != 1.0)
 				osu_tools::file_changer::set_speed_multiplier(aMultiplier, aOsuFile, aNewAudioFilename);
 
-			aOsuFile.sBeatmapID = 0;
+			aOsuFile.s_beatmap_id = 0;
 
 			ofstream lFileStream;
 			lFileStream.open(lSongPath.string(), ofstream::out | ofstream::app);
 			//	fs::create(lSongPath);
-			lFileStream << "osu file format v" << static_cast<int>(aOsuFile.sBeatmapVersion) << std::endl << std::endl;
+			lFileStream << "osu file format v" << static_cast<int>(aOsuFile.s_beatmap_version) << std::endl << std::endl;
 
 			lFileStream << "[General]" << std::endl;
-			if (!aOsuFile.sAudioFilename.empty())
-				lFileStream << "AudioFilename:" << aOsuFile.sAudioFilename << std::endl;
-			if(aOsuFile.sAudioLeadIn != -1)
-				lFileStream << "AudioLeadIn:" << aOsuFile.sAudioLeadIn << std::endl;
-			if (aOsuFile.sPreviewTime != -1)
-				lFileStream << "PreviewTime:" << aOsuFile.sPreviewTime << std::endl;
-			if(aOsuFile.sCountdown != -1)
-				lFileStream << "Countdown:" << static_cast<int>(aOsuFile.sCountdown) << std::endl;
-			if (!aOsuFile.sSampleSet.empty())
-				lFileStream << "SampleSet:" << aOsuFile.sSampleSet << std::endl;
-			if (aOsuFile.sStackLeniency != -1.0)
-				lFileStream << "StackLeniency:" << aOsuFile.sStackLeniency << std::endl; // float x.x
-			if (aOsuFile.sMode != -1)
-				lFileStream << "Mode:" << static_cast<int>(aOsuFile.sMode) << std::endl; // uint8_t
-			if(aOsuFile.sLetterboxInBreaks != -1)
-				lFileStream << "LetterboxInBreaks:" << static_cast<int>(aOsuFile.sLetterboxInBreaks) << std::endl;
-			if (!aOsuFile.sSkinPreference.empty())
-				lFileStream << "SkinPreference:" << aOsuFile.sSkinPreference << std::endl;
-			if(static_cast<int>(aOsuFile.sEpilepsyWarning) != -1)
-				lFileStream << "EpilepsyWarning:" << static_cast<int>(aOsuFile.sEpilepsyWarning) << std::endl;
-			if(aOsuFile.sWidescreenStoryboard != -1)
-				lFileStream << "WidescreenStoryboard:" << static_cast<int>(aOsuFile.sWidescreenStoryboard) << std::endl;
+			if (!aOsuFile.s_audio_filename.empty())
+				lFileStream << "AudioFilename:" << aOsuFile.s_audio_filename << std::endl;
+			if(aOsuFile.s_audio_lead_in != -1)
+				lFileStream << "AudioLeadIn:" << aOsuFile.s_audio_lead_in << std::endl;
+			if (aOsuFile.s_preview_time != -1)
+				lFileStream << "PreviewTime:" << aOsuFile.s_preview_time << std::endl;
+			if(aOsuFile.s_countdown != -1)
+				lFileStream << "Countdown:" << static_cast<int>(aOsuFile.s_countdown) << std::endl;
+			if (!aOsuFile.s_sample_set.empty())
+				lFileStream << "SampleSet:" << aOsuFile.s_sample_set << std::endl;
+			if (aOsuFile.s_stack_leniency != -1.0)
+				lFileStream << "StackLeniency:" << aOsuFile.s_stack_leniency << std::endl; // float x.x
+			if (aOsuFile.s_mode != -1)
+				lFileStream << "Mode:" << static_cast<int>(aOsuFile.s_mode) << std::endl; // uint8_t
+			if(aOsuFile.s_letterbox_in_breaks != -1)
+				lFileStream << "LetterboxInBreaks:" << static_cast<int>(aOsuFile.s_letterbox_in_breaks) << std::endl;
+			if (!aOsuFile.s_skin_preference.empty())
+				lFileStream << "SkinPreference:" << aOsuFile.s_skin_preference << std::endl;
+			if(static_cast<int>(aOsuFile.s_epilepsy_warning) != -1)
+				lFileStream << "EpilepsyWarning:" << static_cast<int>(aOsuFile.s_epilepsy_warning) << std::endl;
+			if(aOsuFile.s_widescreen_storyboard != -1)
+				lFileStream << "WidescreenStoryboard:" << static_cast<int>(aOsuFile.s_widescreen_storyboard) << std::endl;
 			lFileStream << std::endl;
 
 			lFileStream << "[Editor]" << std::endl;
-			if(!aOsuFile.sBookmarks.empty())
+			if(!aOsuFile.s_bookmarks.empty())
 			{
 				lFileStream << "Bookmarks:";
-				for (uint32_t i = 0; i < aOsuFile.sBookmarks.size(); ++i)
+				for (uint32_t i = 0; i < aOsuFile.s_bookmarks.size(); ++i)
 				{
-					lFileStream << aOsuFile.sBookmarks[i];
-					if (i != aOsuFile.sBookmarks.size() - 1)
+					lFileStream << aOsuFile.s_bookmarks[i];
+					if (i != aOsuFile.s_bookmarks.size() - 1)
 						lFileStream << ",";
 				}
 			}
-			if(aOsuFile.sDistanceSpacing != -1.0)
-				lFileStream << "DistanceSpacing:" << aOsuFile.sDistanceSpacing << std::endl;
-			if(aOsuFile.sBeatDivisor != -1)
-				lFileStream << "BeatDivisor:" << static_cast<int>(aOsuFile.sBeatDivisor) << std::endl;
-			if(aOsuFile.sGridSize != -1)
-				lFileStream << "GridSize:" << static_cast<int>(aOsuFile.sGridSize) << std::endl;
-			if(aOsuFile.sTimelineZoom != -1.0)
-				lFileStream << "TimelineZoom:" << aOsuFile.sTimelineZoom << std::endl; // float x.x
+			if(aOsuFile.s_distance_spacing != -1.0)
+				lFileStream << "DistanceSpacing:" << aOsuFile.s_distance_spacing << std::endl;
+			if(aOsuFile.s_beat_divisor != -1)
+				lFileStream << "BeatDivisor:" << static_cast<int>(aOsuFile.s_beat_divisor) << std::endl;
+			if(aOsuFile.s_grid_size != -1)
+				lFileStream << "GridSize:" << static_cast<int>(aOsuFile.s_grid_size) << std::endl;
+			if(aOsuFile.s_timeline_zoom != -1.0)
+				lFileStream << "TimelineZoom:" << aOsuFile.s_timeline_zoom << std::endl; // float x.x
 			lFileStream << std::endl;
 			
 
 			lFileStream << "[Metadata]" << std::endl;
-			if(!aOsuFile.sTitle.empty())
-				lFileStream << "Title:" << aOsuFile.sTitle << std::endl;
-			if (!aOsuFile.sTitleUnicode.empty())
-				lFileStream << "TitleUnicode:" << aOsuFile.sTitleUnicode << std::endl;
-			if (!aOsuFile.sArtist.empty())
-				lFileStream << "Artist:" << aOsuFile.sArtist << std::endl;
-			if (!aOsuFile.sArtistUnicode.empty())
-				lFileStream << "ArtistUnicode:" << aOsuFile.sArtistUnicode << std::endl;
-			if (!aOsuFile.sCreator.empty())
-				lFileStream << "Creator:" << aOsuFile.sCreator << std::endl;
-			if (!aOsuFile.sVersion.empty())
-				lFileStream << "Version:" << aOsuFile.sVersion << std::endl;
-			if (!aOsuFile.sSource.empty())
-				lFileStream << "Source:" << aOsuFile.sSource << std::endl;
-			if (!aOsuFile.sTags.empty())
-				lFileStream << "Tags:" << aOsuFile.sTags << std::endl;
-			if(aOsuFile.sBeatmapID != -1)
-				lFileStream << "BeatmapId:" << aOsuFile.sBeatmapID << std::endl;
-			if(aOsuFile.sBeatmapSetID != -1)
-				lFileStream << "BeatmapSetID:" << aOsuFile.sBeatmapSetID << std::endl << std::endl;
+			if(!aOsuFile.s_title.empty())
+				lFileStream << "Title:" << aOsuFile.s_title << std::endl;
+			if (!aOsuFile.s_title_unicode.empty())
+				lFileStream << "TitleUnicode:" << aOsuFile.s_title_unicode << std::endl;
+			if (!aOsuFile.s_artist.empty())
+				lFileStream << "Artist:" << aOsuFile.s_artist << std::endl;
+			if (!aOsuFile.s_artist_unicode.empty())
+				lFileStream << "ArtistUnicode:" << aOsuFile.s_artist_unicode << std::endl;
+			if (!aOsuFile.s_creator.empty())
+				lFileStream << "Creator:" << aOsuFile.s_creator << std::endl;
+			if (!aOsuFile.s_version.empty())
+				lFileStream << "Version:" << aOsuFile.s_version << std::endl;
+			if (!aOsuFile.s_source.empty())
+				lFileStream << "Source:" << aOsuFile.s_source << std::endl;
+			if (!aOsuFile.s_tags.empty())
+				lFileStream << "Tags:" << aOsuFile.s_tags << std::endl;
+			if(aOsuFile.s_beatmap_id != -1)
+				lFileStream << "BeatmapId:" << aOsuFile.s_beatmap_id << std::endl;
+			if(aOsuFile.s_beatmap_set_id != -1)
+				lFileStream << "BeatmapSetID:" << aOsuFile.s_beatmap_set_id << std::endl << std::endl;
 			lFileStream << std::endl;
 
 			lFileStream << "[Difficulty]" << std::endl; // all float x.x
-			if (aOsuFile.sHPDrainRate != -1.0)
-				lFileStream << "HPDrainRate:" << aOsuFile.sHPDrainRate << std::endl;
-			if (aOsuFile.sCircleSize != -1.0)
-				lFileStream << "CircleSize:" << aOsuFile.sCircleSize << std::endl;
-			if (aOsuFile.sOverallDifficulty != -1.0)
-				lFileStream << "OverallDifficulty:" << aOsuFile.sOverallDifficulty << std::endl;
-			if (aOsuFile.sApproachRate != -1.0)
-				lFileStream << "ApproachRate:" << aOsuFile.sApproachRate << std::endl;
-			if (aOsuFile.sSliderMultiplier != -1.0)
-				lFileStream << "SliderMultiplier:" << aOsuFile.sSliderMultiplier << std::endl; // float x.xx
-			if (aOsuFile.sSliderTickRate != -1.0)
-				lFileStream << "SliderTickRate:" << aOsuFile.sSliderTickRate << std::endl << std::endl;
+			if (aOsuFile.s_hp_drain_rate != -1.0)
+				lFileStream << "HPDrainRate:" << aOsuFile.s_hp_drain_rate << std::endl;
+			if (aOsuFile.s_circle_size != -1.0)
+				lFileStream << "CircleSize:" << aOsuFile.s_circle_size << std::endl;
+			if (aOsuFile.s_overall_difficulty != -1.0)
+				lFileStream << "OverallDifficulty:" << aOsuFile.s_overall_difficulty << std::endl;
+			if (aOsuFile.s_approach_rate != -1.0)
+				lFileStream << "ApproachRate:" << aOsuFile.s_approach_rate << std::endl;
+			if (aOsuFile.s_slider_multiplier != -1.0)
+				lFileStream << "SliderMultiplier:" << aOsuFile.s_slider_multiplier << std::endl; // float x.xx
+			if (aOsuFile.s_slider_tick_rate != -1.0)
+				lFileStream << "SliderTickRate:" << aOsuFile.s_slider_tick_rate << std::endl << std::endl;
 
 			lFileStream << "[Events]" << std::endl;
 			lFileStream << "//Background and Video events" << std::endl;
-			if (!aOsuFile.sBackground.empty())
+			if (!aOsuFile.s_background.empty())
 			{
-				lFileStream << "0,0,\"" << aOsuFile.sBackground << "\"";
-				if (aOsuFile.sBeatmapVersion >= 10)
+				lFileStream << "0,0,\"" << aOsuFile.s_background << "\"";
+				if (aOsuFile.s_beatmap_version >= 10)
 					lFileStream << ",0,0";
 				lFileStream << std::endl;
 			}
 			lFileStream << "//Break Periods" << std::endl;
-			for (const auto& lBreak : aOsuFile.sBreakPeriods)
+			for (const auto& lBreak : aOsuFile.s_break_periods)
 				lFileStream << "2," << lBreak.first << "," << lBreak.second << std::endl;
 			lFileStream << "//Storyboard Layer 0 (Background)" << std::endl;
 			lFileStream << "//Storyboard Layer 1 (Fail)" << std::endl;
@@ -185,67 +185,67 @@ namespace osu_tools
 			lFileStream << std::endl;
 
 			lFileStream << "[TimingPoints]" << std::endl;
-			for (const auto& lTimingPoint : aOsuFile.sTimingPoints)
-				lFileStream << lTimingPoint.sOffset << "," << lTimingPoint.sMSPerBeat << "," << lTimingPoint.sMeter << "," << static_cast<int>(lTimingPoint.sSampleSet) << "," << static_cast<int>(lTimingPoint.sSampleIndex) << "," << static_cast<int>(lTimingPoint.sVolume) << "," << lTimingPoint.sInherited << "," << lTimingPoint.sKiai << std::endl;
+			for (const auto& lTimingPoint : aOsuFile.s_timing_points)
+				lFileStream << lTimingPoint.s_offset << "," << lTimingPoint.s_ms_per_beat << "," << lTimingPoint.s_meter << "," << static_cast<int>(lTimingPoint.s_sample_set) << "," << static_cast<int>(lTimingPoint.s_sample_index) << "," << static_cast<int>(lTimingPoint.s_volume) << "," << lTimingPoint.s_inherited << "," << lTimingPoint.s_kiai << std::endl;
 			lFileStream << std::endl;
 
 			lFileStream << "[Colours]" << std::endl;
-			for (uint32_t i = 0; i < aOsuFile.sColours.size(); ++i)
-				lFileStream << "Combo" << i + 1 << " : " << get<0>(aOsuFile.sColours[i]) << "," << get<1>(aOsuFile.sColours[i]) << "," << get<2>(aOsuFile.sColours[i]) << std::endl;
+			for (uint32_t i = 0; i < aOsuFile.s_colours.size(); ++i)
+				lFileStream << "Combo" << i + 1 << " : " << get<0>(aOsuFile.s_colours[i]) << "," << get<1>(aOsuFile.s_colours[i]) << "," << get<2>(aOsuFile.s_colours[i]) << std::endl;
 			lFileStream << std::endl;
 
 			lFileStream << "[HitObjects]" << std::endl;
-			for (const auto& lHitObject : aOsuFile.sHitObjects)
+			for (const auto& lHitObject : aOsuFile.s_hit_objects)
 			{
-				if (lHitObject->sType & (1 << 0))
+				if (lHitObject->s_type & (1 << 0))
 				{
 					hit_object_circle* lObject = static_cast<hit_object_circle*>(lHitObject);
-					lFileStream << lObject->sX << "," << lObject->sY << "," << lObject->sTime << "," << static_cast<int>(lObject->sType) << "," << static_cast<int>(lObject->sHitSounds);
-					if (lObject->sExtras.sSampleSet != -1)
+					lFileStream << lObject->s_x << "," << lObject->s_y << "," << lObject->s_time << "," << static_cast<int>(lObject->s_type) << "," << static_cast<int>(lObject->s_hit_sounds);
+					if (lObject->s_extras.s_sample_set != -1)
 					{
-						lFileStream << "," << lObject->sExtras.sSampleSet << ":" << lObject->sExtras.sAdditionSet << ":" << lObject->sExtras.sCustomIndex << ":" << lObject->sExtras.sSampleVolume << ":" << lObject->sExtras.sFilename;
+						lFileStream << "," << lObject->s_extras.s_sample_set << ":" << lObject->s_extras.s_addition_set << ":" << lObject->s_extras.s_custom_index << ":" << lObject->s_extras.s_sample_volume << ":" << lObject->s_extras.s_filename;
 					}
 				}
-				else if (lHitObject->sType & (1 << 1))
+				else if (lHitObject->s_type & (1 << 1))
 				{
 					hit_object_slider* lObject = static_cast<hit_object_slider*>(lHitObject);
-					lFileStream << lObject->sX << "," << lObject->sY << "," << lObject->sTime << "," << static_cast<int>(lObject->sType) << "," << static_cast<int>(lObject->sHitSounds) << "," << lObject->sSliderType;
-					for (const auto& lCurvePoint : lObject->sCurvePoints)
+					lFileStream << lObject->s_x << "," << lObject->s_y << "," << lObject->s_time << "," << static_cast<int>(lObject->s_type) << "," << static_cast<int>(lObject->s_hit_sounds) << "," << lObject->s_slider_type;
+					for (const auto& lCurvePoint : lObject->s_curve_points)
 						lFileStream << "|" << lCurvePoint.first << ":" << lCurvePoint.second;
-					lFileStream << "," << static_cast<int>(lObject->sRepeat) << "," << lObject->sPixelLength;
+					lFileStream << "," << static_cast<int>(lObject->s_repeat) << "," << lObject->s_pixel_length;
 					
-					if(!lObject->sEdgeHitsounds.empty())
+					if(!lObject->s_edge_hitsounds.empty())
 					{
 						lFileStream << ",";
-						for (uint32_t i = 0; i < lObject->sEdgeHitsounds.size(); ++i)
+						for (uint32_t i = 0; i < lObject->s_edge_hitsounds.size(); ++i)
 						{
-							lFileStream << static_cast<int>(lObject->sEdgeHitsounds[i]);
-							if (i < lObject->sEdgeHitsounds.size() - 1)
+							lFileStream << static_cast<int>(lObject->s_edge_hitsounds[i]);
+							if (i < lObject->s_edge_hitsounds.size() - 1)
 								lFileStream << "|";
 						}
 					}
-					if(!lObject->sEdgeAdditions.empty())
+					if(!lObject->s_edge_additions.empty())
 					{
 						lFileStream << ",";
-						for (uint32_t i = 0; i < lObject->sEdgeAdditions.size(); ++i)
+						for (uint32_t i = 0; i < lObject->s_edge_additions.size(); ++i)
 						{
-							lFileStream << static_cast<int>(lObject->sEdgeAdditions[i].first) << ":" << static_cast<int>(lObject->sEdgeAdditions[i].second);
-							if (i < lObject->sEdgeAdditions.size() - 1)
+							lFileStream << static_cast<int>(lObject->s_edge_additions[i].first) << ":" << static_cast<int>(lObject->s_edge_additions[i].second);
+							if (i < lObject->s_edge_additions.size() - 1)
 								lFileStream << "|";
 						}
 					}
-					if (lObject->sExtras.sSampleSet != -1)
+					if (lObject->s_extras.s_sample_set != -1)
 					{
-						lFileStream << "," << lObject->sExtras.sSampleSet << ":" << lObject->sExtras.sAdditionSet << ":" << lObject->sExtras.sCustomIndex << ":" << lObject->sExtras.sSampleVolume << ":" << lObject->sExtras.sFilename;
+						lFileStream << "," << lObject->s_extras.s_sample_set << ":" << lObject->s_extras.s_addition_set << ":" << lObject->s_extras.s_custom_index << ":" << lObject->s_extras.s_sample_volume << ":" << lObject->s_extras.s_filename;
 					}
 				}
-				else if (lHitObject->sType & (1 << 3))
+				else if (lHitObject->s_type & (1 << 3))
 				{
 					hit_object_spinner* lObject = static_cast<hit_object_spinner*>(lHitObject);
-					lFileStream << lObject->sX << "," << lObject->sY << "," << lObject->sTime << "," << static_cast<int>(lObject->sType) << "," << static_cast<int>(lObject->sHitSounds) << "," << lObject->sEndTime;
-					if (lObject->sExtras.sSampleSet != -1)
+					lFileStream << lObject->s_x << "," << lObject->s_y << "," << lObject->s_time << "," << static_cast<int>(lObject->s_type) << "," << static_cast<int>(lObject->s_hit_sounds) << "," << lObject->s_end_time;
+					if (lObject->s_extras.s_sample_set != -1)
 					{
-						lFileStream << "," << lObject->sExtras.sSampleSet << ":" << lObject->sExtras.sAdditionSet << ":" << lObject->sExtras.sCustomIndex << ":" << lObject->sExtras.sSampleVolume << ":" << lObject->sExtras.sFilename;
+						lFileStream << "," << lObject->s_extras.s_sample_set << ":" << lObject->s_extras.s_addition_set << ":" << lObject->s_extras.s_custom_index << ":" << lObject->s_extras.s_sample_volume << ":" << lObject->s_extras.s_filename;
 					}
 
 				}

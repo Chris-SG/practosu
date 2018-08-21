@@ -11,20 +11,22 @@ namespace osu_tools
 {
 	namespace file_changer
 	{
-
+		// Set the speed to a multiplier value
 		void set_speed_multiplier(float aMulti, osu_file& aOsuFile, string aNewFilename)
 		{
-			std::string lFullPath = osu_tools::func::get_beatmap_directory().string() + aOsuFile.sFolderName;
+			// Get the song folder path
+			std::string lFullPath = osu_tools::func::get_beatmap_directory().string() + aOsuFile.s_folder_name;
+			
 			if(!fs::exists(lFullPath + "\\" + aNewFilename))
 			{
-				if(!fs::exists(lFullPath + "\\" + aOsuFile.sAudioFilename))
+				if(!fs::exists(lFullPath + "\\" + aOsuFile.s_audio_filename))
 				{
-					if (aOsuFile.sAudioFilename.find_first_not_of(" ") == 1)
-						aOsuFile.sAudioFilename = aOsuFile.sAudioFilename.substr(1, aOsuFile.sAudioFilename.find_last_not_of(" "));
+					if (aOsuFile.s_audio_filename.find_first_not_of(" ") == 1)
+						aOsuFile.s_audio_filename = aOsuFile.s_audio_filename.substr(1, aOsuFile.s_audio_filename.find_last_not_of(" "));
 					else
 						throw std::invalid_argument("Audio file cannot be found!");
 				}
-				std::string lCommandLine = "-nostats -loglevel 0 -i \"" + lFullPath + "\\" + aOsuFile.sAudioFilename + "\" -filter:a \"";
+				std::string lCommandLine = "-nostats -loglevel 0 -i \"" + lFullPath + "\\" + aOsuFile.s_audio_filename + "\" -filter:a \"";
 				auto lMulti = aMulti;
 				if (lMulti > 2.0)
 				{
@@ -65,33 +67,36 @@ namespace osu_tools
 				aOsuFile.sCreator = "Bauxe";
 				aOsuFile.sVersion = "Test";
 				aOsuFile.sFileName = aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aOsuFile.sVersion + "].osu";*/
-				aOsuFile.sAudioFilename = aNewFilename;
-				aOsuFile.sPreviewTime /= aMulti;
+				aOsuFile.s_audio_filename = aNewFilename;
+				aOsuFile.s_preview_time /= aMulti;
 
-				for (auto& lTimingPoint : aOsuFile.sTimingPoints)
+				for (auto& lTimingPoint : aOsuFile.s_timing_points)
 				{
-					lTimingPoint.sOffset /= aMulti;
-					if (lTimingPoint.sInherited)
-						lTimingPoint.sMSPerBeat /= aMulti;
+					if (floor(lTimingPoint.s_offset) == lTimingPoint.s_offset)
+						lTimingPoint.s_offset = floor(lTimingPoint.s_offset /= aMulti);
+					else
+						lTimingPoint.s_offset /= aMulti;
+					if (lTimingPoint.s_inherited)
+						lTimingPoint.s_ms_per_beat /= aMulti;
 				}
 
-				for (auto& lBreakPeriod : aOsuFile.sBreakPeriods)
+				for (auto& lBreakPeriod : aOsuFile.s_break_periods)
 				{
 					lBreakPeriod.first /= aMulti;
 					lBreakPeriod.second /= aMulti;
 				}
 
-				for (auto& lHitObject : aOsuFile.sHitObjects)
+				for (auto& lHitObject : aOsuFile.s_hit_objects)
 				{
-					if (lHitObject->sType & (1 << 0))
+					if (lHitObject->s_type & (1 << 0))
 					{
 						hit_object_circle* lObject = static_cast<hit_object_circle*>(lHitObject);
-						lObject->sTime /= aMulti;
+						lObject->s_time /= aMulti;
 					}
-					else if (lHitObject->sType & (1 << 1))
+					else if (lHitObject->s_type & (1 << 1))
 					{
 						hit_object_slider* lObject = static_cast<hit_object_slider*>(lHitObject);
-						lObject->sTime /= aMulti;
+						lObject->s_time /= aMulti;
 
 						/*int lBeatDuration = 0, lBeatPercentage = -100;
 						for(const auto& lTimingPoint : aOsuFile.sTimingPoints)
@@ -108,11 +113,11 @@ namespace osu_tools
 						}
 						lObject->sPixelLength = (lObject->sPixelLength / (100.0 * aOsuFile.sSliderMultiplier)) * (lBeatDuration * (abs(lBeatPercentage) / 100));*/
 					}
-					else if (lHitObject->sType & (1 << 3))
+					else if (lHitObject->s_type & (1 << 3))
 					{
 						hit_object_spinner* lObject = static_cast<hit_object_spinner*>(lHitObject);
-						lObject->sTime /= aMulti;
-						lObject->sEndTime /= aMulti;
+						lObject->s_time /= aMulti;
+						lObject->s_end_time /= aMulti;
 					}
 				}
 			}
