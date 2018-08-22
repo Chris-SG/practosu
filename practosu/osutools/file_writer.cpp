@@ -13,6 +13,7 @@ namespace osu_tools
 {
 	namespace file_writer
 	{
+		// Replace all occurances of a particular string with another string.
 		static inline void ReplaceAll(std::string &str, const std::string& from, const std::string& to)
 		{
 			size_t start_pos = 0;
@@ -26,6 +27,7 @@ namespace osu_tools
 		{
 			std::stringstream lSs;
 
+			// Begin replacing all macros
 			lSs << std::fixed << std::setprecision(1) << aOsuFile.s_approach_rate;
 			ReplaceAll(aNewVersion, "%AR%", lSs.str());
 			ReplaceAll(aNewFilename, "%AR%", lSs.str());
@@ -57,28 +59,33 @@ namespace osu_tools
 			ReplaceAll(aNewFilename, "%VER%", aOsuFile.s_version);
 			if (aNewFilename.find(".osu") == std::string::npos)
 				aNewFilename += ".osu";
+			// Remove any illegal characters from filename to ensure file can
+			// be created.
 			char lIllegalChars[] = "\\/:*?\"<>|";
 			for(uint32_t i = 0; i < strlen(lIllegalChars); ++i)
 				aNewFilename.erase(std::remove(aNewFilename.begin(), aNewFilename.end(), lIllegalChars[i]));
 
-
-
+			// Get full song path using beatmap directory and current song
+			// folder name.
 			auto lSongPath = osu_tools::func::get_beatmap_directory();
 			lSongPath += aOsuFile.s_folder_name;
 			lSongPath /= aNewFilename;
 			aOsuFile.s_version = aNewVersion;
 
-			// if file already exists, we don't want to recreate it
+			// if file already exists, we don't want to recreate it. We will
+			// instead throw an error.
 			if (fs::exists(lSongPath))
 				throw std::invalid_argument("Beatmap file name already exists! Please change file name");
+			// Update beatmapm speed if required.
 			if (aMultiplier != 1.0)
 				osu_tools::file_changer::set_speed_multiplier(aMultiplier, aOsuFile, aNewAudioFilename);
 
+			// Set beatmap id to 0. We can keep beatmapset id the same.
 			aOsuFile.s_beatmap_id = 0;
 
+			// Open file stream and begin writing.
 			ofstream lFileStream;
 			lFileStream.open(lSongPath.string(), ofstream::out | ofstream::app);
-			//	fs::create(lSongPath);
 			lFileStream << "osu file format v" << static_cast<int>(aOsuFile.s_beatmap_version) << std::endl << std::endl;
 
 			lFileStream << "[General]" << std::endl;
@@ -93,9 +100,9 @@ namespace osu_tools
 			if (!aOsuFile.s_sample_set.empty())
 				lFileStream << "SampleSet:" << aOsuFile.s_sample_set << std::endl;
 			if (aOsuFile.s_stack_leniency != -1.0)
-				lFileStream << "StackLeniency:" << aOsuFile.s_stack_leniency << std::endl; // float x.x
+				lFileStream << "StackLeniency:" << aOsuFile.s_stack_leniency << std::endl;
 			if (aOsuFile.s_mode != -1)
-				lFileStream << "Mode:" << static_cast<int>(aOsuFile.s_mode) << std::endl; // uint8_t
+				lFileStream << "Mode:" << static_cast<int>(aOsuFile.s_mode) << std::endl;
 			if(aOsuFile.s_letterbox_in_breaks != -1)
 				lFileStream << "LetterboxInBreaks:" << static_cast<int>(aOsuFile.s_letterbox_in_breaks) << std::endl;
 			if (!aOsuFile.s_skin_preference.empty())
@@ -124,7 +131,7 @@ namespace osu_tools
 			if(aOsuFile.s_grid_size != -1)
 				lFileStream << "GridSize:" << static_cast<int>(aOsuFile.s_grid_size) << std::endl;
 			if(aOsuFile.s_timeline_zoom != -1.0)
-				lFileStream << "TimelineZoom:" << aOsuFile.s_timeline_zoom << std::endl; // float x.x
+				lFileStream << "TimelineZoom:" << aOsuFile.s_timeline_zoom << std::endl;
 			lFileStream << std::endl;
 			
 
@@ -151,7 +158,7 @@ namespace osu_tools
 				lFileStream << "BeatmapSetID:" << aOsuFile.s_beatmap_set_id << std::endl << std::endl;
 			lFileStream << std::endl;
 
-			lFileStream << "[Difficulty]" << std::endl; // all float x.x
+			lFileStream << "[Difficulty]" << std::endl;
 			if (aOsuFile.s_hp_drain_rate != -1.0)
 				lFileStream << "HPDrainRate:" << aOsuFile.s_hp_drain_rate << std::endl;
 			if (aOsuFile.s_circle_size != -1.0)
@@ -161,7 +168,7 @@ namespace osu_tools
 			if (aOsuFile.s_approach_rate != -1.0)
 				lFileStream << "ApproachRate:" << aOsuFile.s_approach_rate << std::endl;
 			if (aOsuFile.s_slider_multiplier != -1.0)
-				lFileStream << "SliderMultiplier:" << aOsuFile.s_slider_multiplier << std::endl; // float x.xx
+				lFileStream << "SliderMultiplier:" << aOsuFile.s_slider_multiplier << std::endl;
 			if (aOsuFile.s_slider_tick_rate != -1.0)
 				lFileStream << "SliderTickRate:" << aOsuFile.s_slider_tick_rate << std::endl << std::endl;
 
@@ -197,6 +204,7 @@ namespace osu_tools
 			lFileStream << "[HitObjects]" << std::endl;
 			for (const auto& lHitObject : aOsuFile.s_hit_objects)
 			{
+				// Write as circle
 				if (lHitObject->s_type & (1 << 0))
 				{
 					hit_object_circle* lObject = static_cast<hit_object_circle*>(lHitObject);
@@ -206,6 +214,7 @@ namespace osu_tools
 						lFileStream << "," << lObject->s_extras.s_sample_set << ":" << lObject->s_extras.s_addition_set << ":" << lObject->s_extras.s_custom_index << ":" << lObject->s_extras.s_sample_volume << ":" << lObject->s_extras.s_filename;
 					}
 				}
+				// Write as slider
 				else if (lHitObject->s_type & (1 << 1))
 				{
 					hit_object_slider* lObject = static_cast<hit_object_slider*>(lHitObject);
@@ -239,6 +248,7 @@ namespace osu_tools
 						lFileStream << "," << lObject->s_extras.s_sample_set << ":" << lObject->s_extras.s_addition_set << ":" << lObject->s_extras.s_custom_index << ":" << lObject->s_extras.s_sample_volume << ":" << lObject->s_extras.s_filename;
 					}
 				}
+				// Write as spinner
 				else if (lHitObject->s_type & (1 << 3))
 				{
 					hit_object_spinner* lObject = static_cast<hit_object_spinner*>(lHitObject);
@@ -249,9 +259,21 @@ namespace osu_tools
 					}
 
 				}
+				// Write as mania hold
+				else if (lHitObject->s_type & (1 << 7))
+				{
+					hit_object_mania_hold* lObject = static_cast<hit_object_mania_hold*>(lHitObject);
+					lFileStream << lObject->s_x << "," << lObject->s_y << "," << lObject->s_time << "," << static_cast<int>(lObject->s_type) << "," << static_cast<int>(lObject->s_hit_sounds) << "," << lObject->s_end_time;
+					if (lObject->s_extras.s_sample_set != -1)
+					{
+						lFileStream << "," << lObject->s_extras.s_sample_set << ":" << lObject->s_extras.s_addition_set << ":" << lObject->s_extras.s_custom_index << ":" << lObject->s_extras.s_sample_volume << ":" << lObject->s_extras.s_filename;
+					}
+
+				}
 				lFileStream << std::endl;
 			}
 
+			// Success
 			lFileStream.close();
 			return true;
 		}

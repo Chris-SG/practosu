@@ -16,9 +16,11 @@ namespace osu_tools
 		{
 			// Get the song folder path
 			std::string lFullPath = osu_tools::func::get_beatmap_directory().string() + aOsuFile.s_folder_name;
-			
+			// Only continue if new audio file does not yet exist
 			if(!fs::exists(lFullPath + "\\" + aNewFilename))
 			{
+				// If original audio file cannot be found, try trimming spaces.
+				// If still not found, throw error.
 				if(!fs::exists(lFullPath + "\\" + aOsuFile.s_audio_filename))
 				{
 					if (aOsuFile.s_audio_filename.find_first_not_of(" ") == 1)
@@ -26,8 +28,10 @@ namespace osu_tools
 					else
 						throw std::invalid_argument("Audio file cannot be found!");
 				}
+				// Setup commandline params to use for ffmpeg
 				std::string lCommandLine = "-nostats -loglevel 0 -i \"" + lFullPath + "\\" + aOsuFile.s_audio_filename + "\" -filter:a \"";
 				auto lMulti = aMulti;
+				// ffmpeg only allows atempo up to 2.0 max.
 				if (lMulti > 2.0)
 				{
 					do
@@ -37,6 +41,7 @@ namespace osu_tools
 					} while (lMulti > 2.0);
 					lCommandLine += "atempo=" + std::to_string(lMulti);
 				}
+				// ffmpeg only allows atempo down to 0.5 min.
 				else if (aMulti < 0.5)
 				{
 					do
@@ -50,26 +55,30 @@ namespace osu_tools
 				{
 					lCommandLine += "atempo=" + std::to_string(lMulti);
 				}
+				// Append final details to commandline
 				lCommandLine += "\" -vn \"" + lFullPath + "\\" + aNewFilename + "\"";
+				// Create process information, prepare for launch
 				STARTUPINFOA lSi;
 				PROCESS_INFORMATION lPi;
 				ZeroMemory(&lSi, sizeof(lSi));
 				lSi.cb = sizeof(lSi);
 				ZeroMemory(&lPi, sizeof(lPi));
 				std::string lffPath = fs::current_path().string() + "\\ffmpeg.exe";
+				// Attempt to create ffmpeg process
 				if (!CreateProcessA(lffPath.c_str(), const_cast<char *>(lCommandLine.c_str()), NULL, NULL, false, 0, NULL, NULL, &lSi, &lPi))
 					throw std::invalid_argument("Failed to create process: " + GetLastError());
 			}
 
+			// try block for modifying the timing points of the beatmap
 			try
 			{
-				/*aOsuFile.sBeatmapID = 0;
-				aOsuFile.sCreator = "Bauxe";
-				aOsuFile.sVersion = "Test";
-				aOsuFile.sFileName = aOsuFile.sArtist + " - " + aOsuFile.sTitle + " (" + aOsuFile.sCreator + ") [" + aOsuFile.sVersion + "].osu";*/
+				// Move across audio filename
 				aOsuFile.s_audio_filename = aNewFilename;
+				// Set preview time to same point
 				aOsuFile.s_preview_time /= aMulti;
 
+				// Loop over all timing points, fixing the offset and, if
+				// applicable, the ms per beat.
 				for (auto& lTimingPoint : aOsuFile.s_timing_points)
 				{
 					if (floor(lTimingPoint.s_offset) == lTimingPoint.s_offset)
@@ -80,42 +89,39 @@ namespace osu_tools
 						lTimingPoint.s_ms_per_beat /= aMulti;
 				}
 
+				// Loop over all break periods and set new timing points.
 				for (auto& lBreakPeriod : aOsuFile.s_break_periods)
 				{
 					lBreakPeriod.first /= aMulti;
 					lBreakPeriod.second /= aMulti;
 				}
 
+				// Loop over all hit objects.
 				for (auto& lHitObject : aOsuFile.s_hit_objects)
 				{
+					// Check if normal hit circle.
 					if (lHitObject->s_type & (1 << 0))
 					{
 						hit_object_circle* lObject = static_cast<hit_object_circle*>(lHitObject);
 						lObject->s_time /= aMulti;
 					}
+					// Check if normal slider.
 					else if (lHitObject->s_type & (1 << 1))
 					{
 						hit_object_slider* lObject = static_cast<hit_object_slider*>(lHitObject);
 						lObject->s_time /= aMulti;
-
-						/*int lBeatDuration = 0, lBeatPercentage = -100;
-						for(const auto& lTimingPoint : aOsuFile.sTimingPoints)
-						{
-						if (lTimingPoint.sOffset < lObject->sTime)
-						{
-						if (lTimingPoint.sMSPerBeat > 0)
-						lBeatDuration = lTimingPoint.sMSPerBeat;
-						else
-						lBeatPercentage = lTimingPoint.sMSPerBeat;
-						}
-						else
-						break;
-						}
-						lObject->sPixelLength = (lObject->sPixelLength / (100.0 * aOsuFile.sSliderMultiplier)) * (lBeatDuration * (abs(lBeatPercentage) / 100));*/
 					}
+					// Check if normal spinner.
 					else if (lHitObject->s_type & (1 << 3))
 					{
 						hit_object_spinner* lObject = static_cast<hit_object_spinner*>(lHitObject);
+						lObject->s_time /= aMulti;
+						lObject->s_end_time /= aMulti;
+					}
+					// Check if normal mania hold.
+					else if(lHitObject->s_type & (1 << 7))
+					{
+						hit_object_mania_hold* lObject = static_cast<hit_object_mania_hold*>(lHitObject);
 						lObject->s_time /= aMulti;
 						lObject->s_end_time /= aMulti;
 					}
@@ -123,11 +129,12 @@ namespace osu_tools
 			}
 			catch (std::exception& e)
 			{
-				throw invalid_argument("Error parsing .osu file: " + *e.what());
+				// Failed to modify correctly.
+				throw invalid_argument("Error modifying timing points: " + *e.what());
 			}
 			
 		}
 
-		void set_speed_percentage(float aMulti, osu_file& aOsuFile);
+		void set_speed_percentage(float aMulti, osu_file& aOsuFile); // todo not implemented
 	}
 }

@@ -37,8 +37,6 @@ dbprogress::dbprogress(QWidget *parent)
 			std::cout << e.what() << std::endl;
 		}
 	}
-
-	//delete mProgressThread;
 }
 
 // Destructor for UI.

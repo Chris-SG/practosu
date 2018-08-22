@@ -18,13 +18,15 @@ namespace osu_tools
 			// confirm file exists
 			if (fs::exists(pFilePath))
 			{
-				// open file
+				// open file and confirm validity
 				ifstream lFile(pFilePath.string());
 				if (lFile.good())
 				{
+					// Create filename using provided path.
 					std::string lFilePath = pFilePath.string();
 					uint32_t lPos = lFilePath.rfind("\\");
 					lOsuFile.s_file_name = lFilePath.substr(lPos + 1, lFilePath.size());
+					// Create foldername using provided path.
 					lFilePath.erase(lPos, lFilePath.size());
 					lPos = lFilePath.rfind("\\");
 					lOsuFile.s_folder_name = lFilePath.substr(lPos + 1, lFilePath.size());
@@ -64,6 +66,7 @@ namespace osu_tools
 						else if (lLine.find("[HitObjects]") != string::npos)
 							read_file_hitobjects(lFile, lOsuFile);
 					}
+					// Once we hit end of file, we can close file.
 					lFile.close();
 				}
 			}
@@ -79,13 +82,16 @@ namespace osu_tools
 				size_t lPos;
 				string lDilimiter = ":";
 				string lToken;
+				// Repeat while we get new lines
 				while (getline(lFs, lLine))
 				{
+					// If a line is empty, we have reach the end of the section.
 					if (lLine.length() == 0)
 						return;
 					lPos = lLine.find(lDilimiter);
 					lToken = lLine.substr(0, lPos);
 					lLine.erase(0, lPos + lDilimiter.length());
+					// Attempt to parse strings first.
 					if (lToken == "AudioFilename")
 						lOsuFile.s_audio_filename = lLine;
 					else if (lToken == "SampleSet")
@@ -96,6 +102,7 @@ namespace osu_tools
 						lOsuFile.s_skin_preference = lLine;
 					else
 					{
+						// All other values are int
 						int sInt = stoi(lLine);
 						if (lToken == "AudioLeadIn")
 							lOsuFile.s_audio_lead_in = sInt;
@@ -128,14 +135,18 @@ namespace osu_tools
 				size_t lPos;
 				string lDilimiter = ":";
 				string lToken;
+				// Repeat while we get new lines
 				while (getline(lFs, lLine))
 				{
+					// If line is empty, we have reached the end of the section.
 					if (lLine.length() == 0)
 						return;
+					// Token-based approach to determine
 					lPos = lLine.find(lDilimiter);
 					lToken = lLine.substr(0, lPos);
 					lLine.erase(0, lPos + lDilimiter.length());
 
+					// Multiple bookmarks may exist, loop over all of them.
 					if (lToken == "Bookmarks")
 					{
 						stringstream lSs(lLine);
@@ -175,8 +186,10 @@ namespace osu_tools
 				size_t lPos;
 				string lDilimiter = ":";
 				string lToken;
+				// Continue while we can get a new line
 				while (getline(lFs, lLine))
 				{
+					// Empty line means we have reached the end of the section
 					if (lLine.length() == 0)
 						return;
 					lPos = lLine.find(lDilimiter);
@@ -218,8 +231,10 @@ namespace osu_tools
 				size_t lPos;
 				string lDilimiter = ":";
 				string lToken;
+				// Repeat while we can get a line
 				while (getline(lFs, lLine))
 				{
+					// An empty line means we have reached the end of the section.
 					if (lLine.length() == 0)
 						return;
 					lPos = lLine.find(lDilimiter);
@@ -248,6 +263,7 @@ namespace osu_tools
 		{
 			try
 			{
+				// Events are currently not implemented. I do not see much use in them.
 				string lLine;
 				while (getline(lFs, lLine))
 				{
@@ -285,8 +301,10 @@ namespace osu_tools
 			try
 			{
 				string lLine;
+				// Continue while we are finding lines.
 				while (getline(lFs, lLine))
 				{
+					// An empty line means end of section.
 					if (lLine.length() == 0)
 						return;
 
@@ -334,14 +352,18 @@ namespace osu_tools
 				size_t lPos;
 				string lDilimiter = ":";
 				string lToken;
+				// Continue while we can get a line.
 				while (getline(lFs, lLine))
 				{
+					// An empty line means end of section.
 					if (lLine.length() == 0)
 						return;
 					lPos = lLine.find(lDilimiter);
 					lToken = lLine.substr(0, lPos);
 					lLine.erase(0, lPos + lDilimiter.length());
 
+					// Assumes all lines will contain color. There are exceptions,
+					// todo fix!
 					stringstream lSs(lLine);
 					int lNum1, lNum2, lNum3;
 					lSs >> lNum1;
@@ -364,14 +386,18 @@ namespace osu_tools
 			{
 				// hit objects are done as pointers, and can later be reaccessed using a static_cast
 				string lLine;
+				// Repeat while getting new line
 				while (getline(lFs, lLine))
 				{
+					// Empty line means end of section
 					if (lLine.length() == 0)
 						return;
 					stringstream lSs(lLine);
 					uint16_t lX, lY;
 					uint32_t lTime, lTemp;
 					uint8_t lType, lHitSounds;
+					// lX, lY, lTime, lType and lHitSounds remain constant between
+					// all hit objects.
 					lSs >> lX;
 					lSs.ignore();
 					lSs >> lY;
@@ -383,6 +409,7 @@ namespace osu_tools
 					lSs.ignore();
 					lSs >> lTemp;
 					lHitSounds = static_cast<uint8_t>(lTemp);
+					// if first bit is set, it is a hit circle.
 					if (lType & (1 << 0))
 					{
 						hit_object_circle* lObject = new hit_object_circle;
@@ -408,6 +435,7 @@ namespace osu_tools
 
 						lOsuFile.s_hit_objects.push_back(lObject);
 					}
+					// If second bit is set, it is a slider.
 					else if (lType & (1 << 1))
 					{
 						hit_object_slider* lObject = new hit_object_slider;
@@ -472,9 +500,39 @@ namespace osu_tools
 
 						lOsuFile.s_hit_objects.push_back(lObject);
 					}
+					// If fourth bit is set, it is a spinner.
 					else if (lType & (1 << 3))
 					{
 						hit_object_spinner* lObject = new hit_object_spinner;
+						lObject->s_x = lX;
+						lObject->s_y = lY;
+						lObject->s_time = lTime;
+						lObject->s_type = lType;
+						lObject->s_hit_sounds = lHitSounds;
+
+						lSs.ignore();
+						lSs >> lObject->s_end_time;
+
+						if (lSs.peek() == ',')
+						{
+							lSs.ignore();
+							lSs >> lObject->s_extras.s_sample_set;
+							lSs.ignore();
+							lSs >> lObject->s_extras.s_addition_set;
+							lSs.ignore();
+							lSs >> lObject->s_extras.s_custom_index;
+							lSs.ignore();
+							lSs >> lObject->s_extras.s_sample_volume;
+							lSs.ignore();
+							lSs >> lObject->s_extras.s_filename;
+						}
+
+						lOsuFile.s_hit_objects.push_back(lObject);
+					}
+					// If eighth bit is set, it is a mania hold note.
+					else if(lType & (1 << 7) && lOsuFile.s_mode ==  3)
+					{
+						hit_object_mania_hold* lObject = new hit_object_mania_hold;
 						lObject->s_x = lX;
 						lObject->s_y = lY;
 						lObject->s_time = lTime;
@@ -522,6 +580,11 @@ namespace osu_tools
 		bool is_spinner(hit_object* lObject)
 		{
 			return (lObject->s_type & (1 << 3));
+		}
+
+		bool is_mania_hold(hit_object* lObject)
+		{
+			return (lObject->s_type & (1 << 7));
 		}
 	}
 }

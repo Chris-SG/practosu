@@ -1,7 +1,12 @@
+// This file contains structs used by osu_tools.
+
 #pragma once
 
 #include "stdafx.h"
 
+// beatmap holds all the information contained within a single
+// beatmap within the osu!.db file. Some values change based on
+// the current database version, determined by the osu! version.
 struct beatmap
 {
 	uint32_t s_entry_sz;
@@ -70,6 +75,8 @@ struct beatmap
 	uint8_t s_mania_scroll_speed;
 };
 
+// A timing_point is a moment in a beatmap in which timing is changed.
+// This is read from a .osu file.
 struct timing_point
 {
 	double s_offset;
@@ -82,6 +89,7 @@ struct timing_point
 	bool s_kiai = false;
 };
 
+// Extra additions that may be added to a hit_object.
 struct hit_object_extras
 {
 	uint32_t s_sample_set = 0;
@@ -91,6 +99,7 @@ struct hit_object_extras
 	std::string s_filename;
 };
 
+// A generic hit_object item.
 struct hit_object
 {
 	uint16_t s_x;
@@ -102,11 +111,13 @@ struct hit_object
 	hit_object_extras s_extras;
 };
 
+// A hit_object_circle type.
 struct hit_object_circle : hit_object
 {
 
 };
 
+// A hit_object_slider type.
 struct hit_object_slider : hit_object
 {
 	char s_slider_type;
@@ -117,11 +128,19 @@ struct hit_object_slider : hit_object
 	std::vector<std::pair<uint8_t, uint8_t>> s_edge_additions;
 };
 
+// A hit_object_spinner type.
 struct hit_object_spinner : hit_object
 {
 	uint32_t s_end_time;
 };
 
+// A hit_object_mania_hold type, exclusively used in osu!mania.
+struct hit_object_mania_hold : hit_object
+{
+	uint32_t s_end_time;
+};
+
+// osu_file contains the full contents of an .osu file.
 struct osu_file
 {
 	std::string s_folder_name;

@@ -6,6 +6,7 @@ presetsmanager::presetsmanager(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
+	// Connect save preset button.
 	connect(ui.savePreset, &QPushButton::clicked, this, &presetsmanager::savePreset);
 }
 
@@ -17,6 +18,7 @@ void presetsmanager::savePreset()
 {
 	if(ui.lineEdit->text().isEmpty())
 	{
+		// Every preset must contain a name.
 		QMessageBox lMsg;
 		lMsg.setText("Please enter a preset name!");
 		lMsg.setStandardButtons(QMessageBox::Ok);
@@ -25,6 +27,7 @@ void presetsmanager::savePreset()
 	}
 	else
 	{
+		// No proper checking on values. May cause errors!
 		preset lPreset;
 		lPreset.sPresetName = ui.lineEdit->text().toStdString();
 		if (ui.hpCheck->isChecked())

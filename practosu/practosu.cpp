@@ -25,6 +25,7 @@ practosu::practosu(QWidget *parent)
 	//auto lDv = new QDoubleValidator(0.1, 10.0, 3);
 	//ui.speedText->setValidator(lDv);
 
+	// Create all object connections.
 	connect(ui.loadMap, &QPushButton::clicked, this, &practosu::selectFile);
 	connect(ui.reloadMap, &QPushButton::clicked, this, &practosu::loadSelectedMap);
 	connect(ui.hpSlider, &QAbstractSlider::valueChanged, this, &practosu::updateHP);
@@ -40,6 +41,7 @@ practosu::practosu(QWidget *parent)
 	connect(ui.audioFileCleaner, &QAction::triggered, this, &practosu::audioCleaner);
 
 	connect(ui.presetsList, &QComboBox::currentTextChanged, this, &practosu::loadPreset);
+	connect(ui.versionChange, &QCheckBox::stateChanged, this, &practosu::updateSliders);
 
 	ui.label_11->setTextInteractionFlags(Qt::TextBrowserInteraction);
 	ui.label_11->setOpenExternalLinks(true);
@@ -52,7 +54,9 @@ void practosu::loadSelectedMap()
 {
 	try
 	{
+		// Load currently selected beatmap.
 		loadMap(osu_tools::func::get_current_beatmap());
+		// Load presets.
 		loadPresetList();
 	}
 	catch(std::exception& e)
@@ -67,14 +71,18 @@ void practosu::loadSelectedMap()
 
 void practosu::pressLoadMap()
 {
+	// Simulate click.
 	ui.reloadMap->click();
 }
 
 void practosu::loadPresetList()
 {
+	// Load all presets and get names.
 	auto lPresets = presets::presetNames();
 	ui.presetsList->clear();
+	// Add blank item.
 	ui.presetsList->addItem("");
+	// Add all presets to list.
 	for (auto lPreset : lPresets)
 		ui.presetsList->addItem(QString::fromStdString(lPreset));
 	ui.presetsList->setCurrentIndex(0);
@@ -82,6 +90,7 @@ void practosu::loadPresetList()
 
 void practosu::resetUI()
 {
+	// Reset UI to empty.
 	clearCurrentMap();
 
 	ui.currentMap->setText("");
@@ -97,10 +106,13 @@ void practosu::resetUI()
 	ui.odSlider->setValue(0);
 	ui.arSlider->setValue(0);
 	ui.speedText->setText("");
+
+	ui.versionChange->setChecked(false);
 }
 
 void practosu::clearCurrentMap()
 {
+	// Clear currently loaded beatmap.
 	for (std::vector<hit_object*>::iterator it = mCurrentMap.s_hit_objects.begin(); it != mCurrentMap.s_hit_objects.end(); ++it)
 		delete(*it);
 	mCurrentMap.s_hit_objects.clear();
@@ -109,8 +121,10 @@ void practosu::clearCurrentMap()
 
 void practosu::loadPreset()
 {
+	// First index is always empty, so ignore.
 	if (ui.presetsList->currentIndex() == 0)
 		return;
+	// Load preset by name.
 	preset lPreset = presets::getPresetByName(ui.presetsList->currentText().toStdString());
 	if (lPreset.sPresetName.empty())
 		return;
@@ -120,6 +134,7 @@ void practosu::loadPreset()
 		ui.versionText->setText(QString::fromStdString(lPreset.sVersion));
 	if (!lPreset.sCreator.empty())
 		ui.creatorText->setText(QString::fromStdString(lPreset.sCreator));
+	// Version before 13 doesn't support decimal values.
 	if(mCurrentMap.s_beatmap_version<13)
 	{
 		if (lPreset.sAR != -1)
@@ -148,6 +163,7 @@ void practosu::loadPreset()
 
 void practosu::editPresets()
 {
+	// Open new preset menu.
 	presetsmanager * lMgr = new presetsmanager;
 	lMgr->show();
 	lMgr->setAttribute(Qt::WA_DeleteOnClose);
@@ -156,6 +172,8 @@ void practosu::editPresets()
 
 void practosu::audioCleaner()
 {
+	// Confirm user wants to run audio cleaner. It is an expensive
+	// operation.
 	QMessageBox l_box;
 	l_box.setText("Are you sure?");
 	l_box.setInformativeText("This is an expensive operation and may take several minutes if you have many beatmaps. In addition, the program will become unresponsive while loading. Use with caution!");
@@ -184,59 +202,38 @@ void practosu::loadMap(fs::path aPath)
 	ui.fileText->setText(QString::fromStdString("%NAME%"));
 	ui.creatorText->setText(QString::fromStdString("practosu"));
 	ui.versionText->setText(QString::fromStdString(mCurrentMap.s_version));
-	if(mCurrentMap.s_beatmap_version >= 13)
-	{
-		ui.hpSlider->setMaximum(100);
-		ui.csSlider->setMaximum(100);
-		ui.odSlider->setMaximum(100);
-		ui.arSlider->setMaximum(100);
-		ui.hpSlider->setValue(mCurrentMap.s_hp_drain_rate * 10);
-		ui.csSlider->setValue(mCurrentMap.s_circle_size * 10);
-		ui.odSlider->setValue(mCurrentMap.s_overall_difficulty * 10);
-		if (mCurrentMap.s_approach_rate == -1.0)
-			ui.arSlider->setDisabled(true);
-		else
-		{
-			ui.arSlider->setDisabled(false);
-			ui.arSlider->setValue(mCurrentMap.s_approach_rate * 10);
-		}
-	}
-	else
-	{
-		ui.hpSlider->setMaximum(10);
-		ui.csSlider->setMaximum(10);
-		ui.odSlider->setMaximum(10);
-		ui.arSlider->setMaximum(10);
-		ui.hpSlider->setValue(static_cast<int>(mCurrentMap.s_hp_drain_rate));
-		ui.csSlider->setValue(static_cast<int>(mCurrentMap.s_circle_size));
-		ui.odSlider->setValue(static_cast<int>(mCurrentMap.s_overall_difficulty));
-		if (mCurrentMap.s_approach_rate == -1.0)
-			ui.arSlider->setDisabled(true);
-		else
-		{
-			ui.arSlider->setDisabled(false);
-			ui.arSlider->setValue(static_cast<int>(mCurrentMap.s_approach_rate));
-		}
-	}
+	setVersion(mCurrentMap.s_beatmap_version);
 
 	ui.speedText->setText("1.0");
+}
+
+void practosu::updateSliders()
+{
+	// Update beatmap version and sliders.
+	if(ui.versionChange->isChecked())
+	{
+		setVersion(14);
+	}
 }
 
 void practosu::writeFile()
 {
 	try
 	{
+		// Prepare writing of file.
 		mCurrentMap.s_approach_rate = std::stof(ui.arLabel->text().toStdString());
 		mCurrentMap.s_overall_difficulty = std::stof(ui.odLabel->text().toStdString());
 		mCurrentMap.s_hp_drain_rate = std::stof(ui.hpLabel->text().toStdString());
 		mCurrentMap.s_circle_size = std::stof(ui.csLabel->text().toStdString());
-		//mCurrentMap.sFileName = ui.fileText->text().toStdString();
 		mCurrentMap.s_creator = ui.creatorText->text().toStdString();
+		if (ui.versionChange->isChecked())
+			mCurrentMap.s_beatmap_version = 14;
 
 		if (std::stof(ui.speedText->text().toStdString()) == 1.0)
 			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), ui.versionText->text().toStdString());
 		else
 			osu_tools::file_writer::write_file(mCurrentMap, ui.fileText->text().toStdString(), ui.audioText->text().toStdString(), ui.versionText->text().toStdString(), std::stof(ui.speedText->text().toStdString()));
+		// Reset UI after writing file.
 		resetUI();
 		ui.success->setVisible(true);
 	}
@@ -252,6 +249,7 @@ void practosu::writeFile()
 
 void practosu::updateAudio()
 {
+	// Update audio filename.
 	if(ui.speedText->text().isEmpty())
 		ui.audioText->setText(QString::fromStdString(mCurrentMap.s_audio_filename));
 	else if (std::stof(ui.speedText->text().toStdString()) == 1.0)
@@ -265,6 +263,7 @@ void practosu::updateAudio()
 
 void practosu::selectFile()
 {
+	// Create selection dialog.
 	auto lPath = osu_tools::func::get_beatmap_directory();
 	QString lDirectory = QFileDialog::getOpenFileName(this, tr("Select .osu file"), QString::fromStdString(lPath.string()), (".osu Files (*.osu)"));
 	if(!lDirectory.isEmpty())
@@ -309,4 +308,40 @@ void practosu::updateAR()
 	ui.arLabel->setText(QString::fromStdString(lStream.str()));
 }
 
-void poll();
+void practosu::setVersion(uint8_t a_version)
+{
+	mCurrentMap.s_beatmap_version = a_version;
+	// Version 13 and later support decimal values.
+	if (mCurrentMap.s_beatmap_version >= 13)
+	{
+		ui.hpSlider->setMaximum(100);
+		ui.csSlider->setMaximum(100);
+		ui.odSlider->setMaximum(100);
+		ui.arSlider->setMaximum(100);
+		ui.hpSlider->setValue(mCurrentMap.s_hp_drain_rate * 10);
+		ui.csSlider->setValue(mCurrentMap.s_circle_size * 10);
+		ui.odSlider->setValue(mCurrentMap.s_overall_difficulty * 10);
+		if (mCurrentMap.s_approach_rate == -1.0)
+			mCurrentMap.s_approach_rate = mCurrentMap.s_overall_difficulty;
+		ui.arSlider->setDisabled(false);
+		ui.arSlider->setValue(mCurrentMap.s_approach_rate * 10);
+	}
+	else
+	{
+		ui.hpSlider->setMaximum(10);
+		ui.csSlider->setMaximum(10);
+		ui.odSlider->setMaximum(10);
+		ui.arSlider->setMaximum(10);
+		ui.hpSlider->setValue(static_cast<int>(mCurrentMap.s_hp_drain_rate));
+		ui.csSlider->setValue(static_cast<int>(mCurrentMap.s_circle_size));
+		ui.odSlider->setValue(static_cast<int>(mCurrentMap.s_overall_difficulty));
+		// Approach Rate was originally tied to OD.
+		if (mCurrentMap.s_approach_rate == -1.0)
+			ui.arSlider->setDisabled(true);
+		else
+		{
+			ui.arSlider->setDisabled(false);
+			ui.arSlider->setValue(static_cast<int>(mCurrentMap.s_approach_rate));
+		}
+	}
+}

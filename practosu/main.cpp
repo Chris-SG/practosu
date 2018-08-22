@@ -11,6 +11,7 @@ void pollKeyboard(practosu& aWindow)
 	using namespace std::chrono_literals;
 	bool lPressed = false;
 
+	// Create input for bringing window to front (hacky)
 	INPUT lInput;
 	lInput.type = INPUT_KEYBOARD;
 	lInput.ki.wScan = 0;

@@ -15,6 +15,7 @@ namespace osu_tools
 			// confirm file path exists and db is not cached
 			if (!a_db_cached)
 			{
+				// Throw error if file cannot be found.
 				if (!fs::exists(pFilePath))
 					throw std::invalid_argument("osu.db file does not exist in path " + pFilePath.string());
 				// open file as binary
@@ -32,7 +33,7 @@ namespace osu_tools
 						a_cached_db.s_player_name = get_string(lFile);
 						a_cached_db.s_beatmap_count = get_int(lFile);
 						a_cached_db.s_file_details = vector<tuple<uint32_t, string, string>>();
-						//lDb.s_beatmaps = vector<beatmap>();
+						//lDb.s_beatmaps = vector<beatmap>(); // can be used to store ALL beatmap information.
 						// iterate over beatmap entries
 						for (uint32_t i = 0; i < a_cached_db.s_beatmap_count; ++i)
 						{
@@ -53,39 +54,29 @@ namespace osu_tools
 							lBeatmap.s_num_sliders = get_short(lFile);
 							lBeatmap.s_num_spinners = get_short(lFile);
 							lBeatmap.s_last_modification = get_long_long(lFile);
-							//						if (lBeatmap.sLastModification >= uint64_t(635378688000000000))
-							if (1)
-							{
-								lBeatmap.s_ar_float = get_float(lFile);
-								lBeatmap.s_cs_float = get_float(lFile);
-								lBeatmap.s_hp_float = get_float(lFile);
-								lBeatmap.s_od_float = get_float(lFile);
 
-							}
-							else
-							{
-								lBeatmap.s_ar = get_char(lFile);
-								lBeatmap.s_cs = get_char(lFile);
-								lBeatmap.s_hp = get_char(lFile);
-								lBeatmap.s_od = get_char(lFile);
-							}
+							// should use non-float if version is before 2014-06-09
+							lBeatmap.s_ar_float = get_float(lFile);
+							lBeatmap.s_cs_float = get_float(lFile);
+							lBeatmap.s_hp_float = get_float(lFile);
+							lBeatmap.s_od_float = get_float(lFile);
+
 							lBeatmap.s_slider_velocity = get_double(lFile);
-							//if (lBeatmap.sLastModification >= uint64_t(635378688000000000))
-							if (1)
-							{
-								lBeatmap.s_ratings_std = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.s_ratings_std; ++j)
-									lBeatmap.s_star_rating_std.push_back(get_int_double_pair(lFile));
-								lBeatmap.s_ratings_taiko = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.s_ratings_taiko; ++j)
-									lBeatmap.s_star_rating_taiko.push_back(get_int_double_pair(lFile));
-								lBeatmap.s_ratings_ctb = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.s_ratings_ctb; ++j)
-									lBeatmap.s_star_rating_ctb.push_back(get_int_double_pair(lFile));
-								lBeatmap.s_ratings_mania = get_int(lFile);
-								for (uint32_t j = 0; j < lBeatmap.s_ratings_mania; ++j)
-									lBeatmap.s_star_rating_mania.push_back(get_int_double_pair(lFile));
-							}
+
+							// should be removed if version is before 2014-06-09
+							lBeatmap.s_ratings_std = get_int(lFile);
+							for (uint32_t j = 0; j < lBeatmap.s_ratings_std; ++j)
+								lBeatmap.s_star_rating_std.push_back(get_int_double_pair(lFile));
+							lBeatmap.s_ratings_taiko = get_int(lFile);
+							for (uint32_t j = 0; j < lBeatmap.s_ratings_taiko; ++j)
+								lBeatmap.s_star_rating_taiko.push_back(get_int_double_pair(lFile));
+							lBeatmap.s_ratings_ctb = get_int(lFile);
+							for (uint32_t j = 0; j < lBeatmap.s_ratings_ctb; ++j)
+								lBeatmap.s_star_rating_ctb.push_back(get_int_double_pair(lFile));
+							lBeatmap.s_ratings_mania = get_int(lFile);
+							for (uint32_t j = 0; j < lBeatmap.s_ratings_mania; ++j)
+								lBeatmap.s_star_rating_mania.push_back(get_int_double_pair(lFile));
+
 							lBeatmap.s_draintime = get_int(lFile);
 							lBeatmap.s_total_time = get_int(lFile);
 							lBeatmap.s_preview_time = get_int(lFile);
@@ -116,23 +107,24 @@ namespace osu_tools
 							lBeatmap.s_disable_sb = get_bool(lFile);
 							lBeatmap.s_disable_video = get_bool(lFile);
 							lBeatmap.s_visual_override = get_bool(lFile);
-							//if (lBeatmap.sLastModification < uint64_t(635378688000000000))
-							if (0)
-								lBeatmap.s_unknown = get_short(lFile); // only prior to 20140609
+							// should be uncommented if version is before 2014-06-09
+							//lBeatmap.s_unknown = get_short(lFile);
 							lBeatmap.s_last_modification_time = get_int(lFile);
 							lBeatmap.s_mania_scroll_speed = get_char(lFile);
 
-							//lDb.s_beatmaps.push_back(lBeatmap);
+							//lDb.s_beatmaps.push_back(lBeatmap); // if using whole beatmap, uncomment this.
 							a_cached_db.s_file_details.push_back(std::tuple<uint32_t, string, string>(lBeatmap.s_beatmap_id, lBeatmap.s_folder_name, lBeatmap.s_osu_filename));
 						}
 					}
 					catch (std::exception& e)
 					{
+						// Clear cached data.
 						a_cached_db.s_file_details.clear();
 						a_cached_db = a_empty_struct;
 						throw e;
 					}
 
+					// Success
 					lFile.close();
 					a_db_cached = true;
 					return true;
