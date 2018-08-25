@@ -625,6 +625,7 @@
      <string>Tools</string>
     </property>
     <addaction name="audioFileCleaner"/>
+    <addaction name="manualPointerSearch"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -649,6 +650,11 @@
   <action name="audioFileCleaner">
    <property name="text">
     <string>Audio File Cleaner</string>
+   </property>
+  </action>
+  <action name="manualPointerSearch">
+   <property name="text">
+    <string>Manual Pointer Search</string>
    </property>
   </action>
  </widget>

@@ -15,10 +15,7 @@ namespace fs = std::experimental::filesystem;
 practosu::practosu(QWidget *parent)
 	: QMainWindow(parent)
 {
-	dbprogress * lWdg = new dbprogress;
-	while (!lWdg->mComplete)
-		Sleep(1000);
-	delete lWdg;
+	reloadDb();
 	ui.setupUi(this);
 	setFixedSize(700, 460);
 
@@ -32,6 +29,7 @@ practosu::practosu(QWidget *parent)
 	connect(ui.csSlider, &QAbstractSlider::valueChanged, this, &practosu::updateCS);
 	connect(ui.odSlider, &QAbstractSlider::valueChanged, this, &practosu::updateOD);
 	connect(ui.arSlider, &QAbstractSlider::valueChanged, this, &practosu::updateAR);
+	connect(ui.reloadDb, &QPushButton::clicked, this, &practosu::reloadDb);
 
 	connect(ui.writeFile, &QPushButton::clicked, this, &practosu::writeFile);
 	connect(ui.speedText, &QLineEdit::textChanged, this, &practosu::updateAudio);
@@ -39,6 +37,7 @@ practosu::practosu(QWidget *parent)
 
 	connect(ui.actionQuit, &QAction::triggered, this, &practosu::close);
 	connect(ui.audioFileCleaner, &QAction::triggered, this, &practosu::audioCleaner);
+	connect(ui.manualPointerSearch, &QAction::triggered, this, &practosu::manualPointerSearch);
 
 	connect(ui.presetsList, &QComboBox::currentTextChanged, this, &practosu::loadPreset);
 	connect(ui.versionChange, &QCheckBox::stateChanged, this, &practosu::updateSliders);
@@ -121,44 +120,55 @@ void practosu::clearCurrentMap()
 
 void practosu::loadPreset()
 {
-	// First index is always empty, so ignore.
-	if (ui.presetsList->currentIndex() == 0)
-		return;
-	// Load preset by name.
-	preset lPreset = presets::getPresetByName(ui.presetsList->currentText().toStdString());
-	if (lPreset.sPresetName.empty())
-		return;
-	if (!lPreset.sFilename.empty())
-		ui.fileText->setText(QString::fromStdString(lPreset.sFilename));
-	if (!lPreset.sVersion.empty())
-		ui.versionText->setText(QString::fromStdString(lPreset.sVersion));
-	if (!lPreset.sCreator.empty())
-		ui.creatorText->setText(QString::fromStdString(lPreset.sCreator));
-	// Version before 13 doesn't support decimal values.
-	if(mCurrentMap.s_beatmap_version<13)
+	try
 	{
-		if (lPreset.sAR != -1)
-			ui.arSlider->setValue(std::round(lPreset.sAR / 10));
-		if (lPreset.sCS != -1)
-			ui.csSlider->setValue(std::round(lPreset.sCS / 10));
-		if (lPreset.sOD != -1)
-			ui.odSlider->setValue(std::round(lPreset.sOD / 10));
-		if (lPreset.sHP != -1)
-			ui.hpSlider->setValue(std::round(lPreset.sHP / 10));
+		// First index is always empty, so ignore.
+		if (ui.presetsList->currentIndex() == 0)
+			return;
+		// Load preset by name.
+		preset lPreset = presets::getPresetByName(ui.presetsList->currentText().toStdString());
+		if (lPreset.sPresetName.empty())
+			return;
+		if (!lPreset.sFilename.empty())
+			ui.fileText->setText(QString::fromStdString(lPreset.sFilename));
+		if (!lPreset.sVersion.empty())
+			ui.versionText->setText(QString::fromStdString(lPreset.sVersion));
+		if (!lPreset.sCreator.empty())
+			ui.creatorText->setText(QString::fromStdString(lPreset.sCreator));
+		// Version before 13 doesn't support decimal values.
+		if (mCurrentMap.s_beatmap_version<13)
+		{
+			if (lPreset.sAR != -1)
+				ui.arSlider->setValue(std::round(lPreset.sAR / 10));
+			if (lPreset.sCS != -1)
+				ui.csSlider->setValue(std::round(lPreset.sCS / 10));
+			if (lPreset.sOD != -1)
+				ui.odSlider->setValue(std::round(lPreset.sOD / 10));
+			if (lPreset.sHP != -1)
+				ui.hpSlider->setValue(std::round(lPreset.sHP / 10));
+		}
+		else
+		{
+			if (lPreset.sAR != -1)
+				ui.arSlider->setValue(lPreset.sAR);
+			if (lPreset.sCS != -1)
+				ui.csSlider->setValue(lPreset.sCS);
+			if (lPreset.sOD != -1)
+				ui.odSlider->setValue(lPreset.sOD);
+			if (lPreset.sHP != -1)
+				ui.hpSlider->setValue(lPreset.sHP);
+		}
+		if (lPreset.sSpeed != -1.0)
+			ui.speedText->setText(QString::number(lPreset.sSpeed));
 	}
-	else
+	catch(std::exception& e)
 	{
-		if (lPreset.sAR != -1)
-			ui.arSlider->setValue(lPreset.sAR);
-		if (lPreset.sCS != -1)
-			ui.csSlider->setValue(lPreset.sCS);
-		if (lPreset.sOD != -1)
-			ui.odSlider->setValue(lPreset.sOD);
-		if (lPreset.sHP != -1)
-			ui.hpSlider->setValue(lPreset.sHP);
+		QMessageBox lMsg;
+		lMsg.setText("Error loading preset");
+		lMsg.setInformativeText(e.what());
+		lMsg.setStandardButtons(QMessageBox::Ok);
+		lMsg.exec();
 	}
-	if (lPreset.sSpeed != -1.0)
-		ui.speedText->setText(QString::number(lPreset.sSpeed));
 }
 
 void practosu::editPresets()
@@ -191,20 +201,31 @@ void practosu::audioCleaner()
 
 void practosu::loadMap(fs::path aPath)
 {
-	clearCurrentMap();
-	ui.success->setVisible(false);
+	try
+	{	
+		clearCurrentMap();
+		ui.success->setVisible(false);
 
-	mCurrentMap = osu_tools::file_parser::parse_osu_file(aPath);
-	ui.currentMap->setText(QString::fromStdString(mCurrentMap.s_file_name));
-	ui.audioText->setText(QString::fromStdString(mCurrentMap.s_audio_filename));
-	ui.audioText->setReadOnly(true);
-	
-	ui.fileText->setText(QString::fromStdString("%NAME%"));
-	ui.creatorText->setText(QString::fromStdString("practosu"));
-	ui.versionText->setText(QString::fromStdString(mCurrentMap.s_version));
-	setVersion(mCurrentMap.s_beatmap_version);
+		mCurrentMap = osu_tools::file_parser::parse_osu_file(aPath);
+		ui.currentMap->setText(QString::fromStdString(mCurrentMap.s_file_name));
+		ui.audioText->setText(QString::fromStdString(mCurrentMap.s_audio_filename));
+		ui.audioText->setReadOnly(true);
+		
+		ui.fileText->setText(QString::fromStdString("%NAME%"));
+		ui.creatorText->setText(QString::fromStdString("practosu"));
+		ui.versionText->setText(QString::fromStdString(mCurrentMap.s_version));
+		setVersion(mCurrentMap.s_beatmap_version);
 
-	ui.speedText->setText("1.0");
+		ui.speedText->setText("1.0");
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox lMsg;
+		lMsg.setText("Error loading map");
+		lMsg.setInformativeText(e.what());
+		lMsg.setStandardButtons(QMessageBox::Ok);
+		lMsg.exec();
+	}
 }
 
 void practosu::updateSliders()
@@ -344,4 +365,45 @@ void practosu::setVersion(uint8_t a_version)
 			ui.arSlider->setValue(static_cast<int>(mCurrentMap.s_approach_rate));
 		}
 	}
+}
+
+void practosu::manualPointerSearch()
+{
+	// Confirm user wants to run pointer search.
+	QMessageBox l_box;
+	l_box.setText("Are you sure?");
+	l_box.setInformativeText("Only use this if automatic beatmap searching (F11) is not working!");
+	l_box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+	l_box.setDefaultButton(QMessageBox::Ok);
+	auto l_result = l_box.exec();
+
+	if (l_result == QMessageBox::Ok)
+	{
+		QMessageBox l_box_2;
+		// Perform first part of manual search.
+		l_box_2.setText("Part One");
+		l_box_2.setInformativeText("Please ensure you have <a href=\"osu://dl/163112\">Kuba Oms - My Love (W h i t e)</a> downloaded.</br>When ready, select the 'Normal' difficulty and click Ok.");
+		l_box_2.setStandardButtons(QMessageBox::Ok);
+		l_box_2.setDefaultButton(QMessageBox::Ok);
+		auto l_result = l_box_2.exec();
+		osu_tools::func::backup_pointer_search();
+		// Perform second part of manual search.
+		l_box_2.setText("Part Two");
+		l_box_2.setInformativeText("Thanks! Now change to the 'Hard' difficulty and click Ok again.");
+		l_result = l_box_2.exec();
+		osu_tools::func::backup_pointer_search();
+		// Perform third part of manual search.
+		l_box_2.setText("Part Three");
+		l_box_2.setInformativeText("Just one more! Change to the 'Insane' difficulty and click Ok!");
+		l_result = l_box_2.exec();
+		osu_tools::func::backup_pointer_search();
+	}
+}
+
+void practosu::reloadDb()
+{
+	dbprogress * lWdg = new dbprogress;
+	while (!lWdg->mComplete)
+		Sleep(1000);
+	delete lWdg;
 }

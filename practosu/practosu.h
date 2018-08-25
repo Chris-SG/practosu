@@ -67,5 +67,10 @@ private slots:
 	void updateSliders();
 	// Set beatmap version.
 	void setVersion(uint8_t a_version);
+
+	// Begin manual pointer searching.
+	void manualPointerSearch();
+	// Reload db file.
+	void reloadDb();
 };
 

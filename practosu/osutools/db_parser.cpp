@@ -10,8 +10,15 @@ namespace osu_tools
 {
 	namespace db_parser
 	{
-		bool parse_osu_db(fs::path &pFilePath)
+		bool parse_osu_db(fs::path &pFilePath, bool a_force)
 		{
+			// Clear existing if forced
+			if(a_force)
+			{
+				a_cached_db = a_empty_struct;
+				a_db_cached = false;
+			}
+
 			// confirm file path exists and db is not cached
 			if (!a_db_cached)
 			{

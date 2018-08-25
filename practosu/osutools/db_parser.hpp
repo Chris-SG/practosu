@@ -29,8 +29,9 @@ namespace osu_tools
 		static const osu_db a_empty_struct;
 
 		// Will parse the osu!.db file passed. Does not do any checking, so ensure your path
-		// is correct. Will return successful parsing of file.
-		bool parse_osu_db(std::experimental::filesystem::path &p_file_path);
+		// is correct. Will return successful parsing of file. If a_force is set to true,
+		// will recache db.
+		bool parse_osu_db(std::experimental::filesystem::path &p_file_path, bool a_force = false);
 
 		// Get float from file stream as per osu! reference.
 		float get_float(std::ifstream &p_fs);
