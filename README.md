@@ -33,3 +33,8 @@ Audio File Cleaner
 Creating practice difficulties with changed speeds will result in a new audio file, however removing these difficulties will not remove the audio file automatically. The Audio File Cleaner is used to clear these files.
 As a word of caution, this process may take many minutes if you have a large amount of beatmaps.
 After running the tool, a list of all practosu audio files will be displayed. By clicking 'Delete Inactive Audio Files', the program will scan all relevant beatmaps to see if any audio files are no longer in use, and delete them if so.
+
+-------------------------
+Manual Pointer Search
+-------------------------
+Automatic pointer search seems to fail on some computers. Unfortunately I have not yet been able to work out the reason for this, so instead I have added a manual pointer search. This uses set address patterns from a few beatmap difficulties to manually find the beatmap pointer offset. This will only need to be done once per load of the program.
