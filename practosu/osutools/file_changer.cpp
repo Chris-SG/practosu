@@ -135,6 +135,68 @@ namespace osu_tools
 			
 		}
 
-		void set_speed_percentage(float aMulti, osu_file& aOsuFile); // todo not implemented
+		void set_speed_percentage(float aMulti, osu_file& aOsuFile, string aNewFilename)
+		{
+			set_speed_multiplier(aMulti / 100, aOsuFile, aNewFilename);
+		}
+		
+		double ms_per_beat_to_bpm(double ms)
+		{
+			const double ms_per_second = 1000.0;
+
+			return (ms_per_second / ms) * 60.0;
+		}
+
+		double bpm_to_ms_per_beat(double bpm)
+		{
+			const double ms_per_second = 1000.0;
+
+			return (ms_per_second / bpm) * 60.0;
+		}
+
+		void flip_play_area(osu_file & a_osu_file, bool flip_x, bool flip_y)
+		{
+			if (!flip_x && !flip_y)
+				return;
+
+			for (auto& hit_obj : a_osu_file.s_hit_objects)
+			{
+				if(flip_x)
+					hit_obj->s_x *= -1;
+				if(flip_y)
+					hit_obj->s_y *= -1;
+			}
+		}
+
+
+		// todo : allow arbitrary quadrant size via var
+		void flip_play_area_quadrants(osu_file & a_osu_file, bool flip_x, bool flip_y)
+		{
+			if (!flip_x && !flip_y)
+				return;
+
+			const uint16_t max_osu_pixels_quadrant_x = 0;
+			const uint16_t max_osu_pixels_quadrant_y = 0;
+
+			for (auto& hit_obj : a_osu_file.s_hit_objects)
+			{
+				if (flip_x)
+				{
+
+				}
+			}
+		}
+
+
+		void convert_sliders_to_circles(osu_file & a_osu_file)
+		{
+			for (auto& hit_obj : a_osu_file.s_hit_objects)
+			{
+				if (hit_obj->s_type & 1 << 1)
+				{
+					hit_obj->s_type = 0;
+				}
+			}
+		}
 	}
 }
