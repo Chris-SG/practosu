@@ -38,3 +38,15 @@ After running the tool, a list of all practosu audio files will be displayed. By
 Manual Pointer Search
 -------------------------
 Automatic pointer search seems to fail on some computers. Unfortunately I have not yet been able to work out the reason for this, so instead I have added a manual pointer search. This uses set address patterns from a few beatmap difficulties to manually find the beatmap pointer offset. This will only need to be done once per load of the program.
+
+
+-----------------------------------------------------------------------------------------------------
+
+-------------------------
+Building
+-------------------------
+1. Clone repository.
+2. Add a QTDIR environmental variable for your 32bit QT install (eg. C:\Qt\5.12.0\msvc2017).
+3. Install Qt Visual Studio Tools.
+4. Set Qt version to the same version used in QTDIR within VS.
+5. Enable required modules (Core, GUI, Widgets).
