@@ -18,7 +18,7 @@ namespace osu_tools
 		// Will set the speed based on a percentage value. This value can be any
 		// float value, however should be positive. The a_new_filename parameter
 		// is the name of the new audio file created.
-		void set_speed_percentage(float a_multi, osu_file& a_osu_file, string aNewFilename);
+		void set_speed_percentage(float a_multi, osu_file& a_osu_file, std::string aNewFilename);
 		// Converts sliders into a single hitcircle located at the initial point
 		// of each slider.
 		void convert_sliders_to_circle(osu_file& a_osu_file);

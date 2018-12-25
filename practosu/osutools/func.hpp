@@ -23,9 +23,10 @@ namespace osu_tools
 		static std::experimental::filesystem::path get_current_beatmap();
 
 		// pattern mask to scan for in memory
-		const static inline unsigned char m_beatmap_mask[] = "\xC0\x0F\x8E\x8F\x01\x00\x00\xA1\x00\x00\x00\x00\x89\x45\xC0\x85";
+		const static inline unsigned char m_beatmap_mask[] = "\xC0\x0F\x84\x80\x01\x00\x00\x8D\x00\x00\x00\x00\x0D\xEC\x41\x00";
+		//const static inline unsigned char m_beatmap_mask[] = "\xC0\x0F\x8E\x8F\x01\x00\x00\xA1\x00\x00\x00\x00\x89\x45\xC0\x85";
 		// apply size to mask
-		const static inline char m_beatmap_mask_sz[] = "xxxxxxxx????xxxx";
+		const static inline char m_beatmap_mask_sz[] = "xxxxxxxx????xxx?";
 		// pointer to beatmap
 		static inline DWORD m_beatmap_pointer = 0;
 
